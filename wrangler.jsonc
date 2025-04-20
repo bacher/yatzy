@@ -1,28 +1,17 @@
 {
-  // Schema reference
   "$schema": "node_modules/wrangler/config-schema.json",
-
-  // Worker name
-  "name": "__change_me__",
-
-  // Entry point
+  "name": "yatzy-rwsdk",
   "main": "src/worker.tsx",
-
-  // Compatibility settings
   "compatibility_date": "2024-09-23",
-  "compatibility_flags": ["nodejs_compat"],
-
-  // Assets configuration
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "assets": {
     "binding": "ASSETS"
   },
-
-  // Observability settings
   "observability": {
     "enabled": true
   },
-
-  // Durable Objects configuration
   "durable_objects": {
     "bindings": [
       {
@@ -31,26 +20,22 @@
       }
     ]
   },
-
-  // Environment variables
   "vars": {
-    "WEBAUTHN_APP_NAME": "__change_me__"
+    "WEBAUTHN_APP_NAME": "yatzy-rwsdk"
   },
-
-  // Migrations configuration
   "migrations": [
     {
       "tag": "v1",
-      "new_sqlite_classes": ["SessionDurableObject"]
+      "new_sqlite_classes": [
+        "SessionDurableObject"
+      ]
     }
   ],
-
-  // D1 database configuration
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "__change_me__",
-      "database_id": "__change_me__"
+      "database_name": "yatzy-rwsdk-disastrous-stork",
+      "database_id": "9ad4f000-93d9-4055-8c1f-8836b4a9e7a7"
     }
   ]
 }
