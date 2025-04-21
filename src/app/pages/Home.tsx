@@ -1,14 +1,8 @@
 import { RequestInfo } from "@redwoodjs/sdk/worker";
+import { Board } from "@/app/components/Board";
 
-export function Home({ ctx }: RequestInfo) {
-  return (
-    <div className="root">
-      HELLO
-      <p>
-        {ctx.user?.username
-          ? `You are logged in as user ${ctx.user.username}`
-          : "You are not logged in"}
-      </p>
-    </div>
-  );
-}
+export const Home = ({ ctx }: RequestInfo) => (
+  <div>
+    <Board />
+  </div>
+);

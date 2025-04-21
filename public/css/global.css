@@ -1,0 +1,118 @@
+body {
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+}
+
+*, ::before, ::after {
+    box-sizing: border-box;
+}
+
+.board {
+    display: flex;
+    gap: 16px;
+    max-width: 1024px;
+    margin: 16px auto;
+
+    & > :first-child {
+        flex-grow: 1;
+    }
+}
+
+.board__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px
+}
+
+.scoreboard {
+    display: grid;
+    grid-template-columns: max-content 68px repeat(2, minmax(100px, 1fr));
+    gap: 0 8px;
+}
+
+.scoreboard__row {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / 5;
+    min-height: 31px;
+    margin: 0 0 2px;
+    padding: 0 0 2px;
+    border-bottom: 1px solid black;
+
+    & > * {
+        align-self: center;
+    }
+
+    & > :not(:first-child) {
+        text-align: center;
+    }
+}
+
+.scoreboard__row__hint {
+    display: inline-block;
+    width: 62px;
+    font-size: 12px;
+    color: gray;
+    text-wrap: balance;
+    text-align: center;
+    font-style: italic;
+}
+
+.scoreboard__row__category {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.scoreboard__row__category_with_hint {
+    justify-content: space-between;
+}
+
+.scoreboard__row__category_with_icon {
+    & > span {
+        margin: -1px 0 1px;
+        font-size: 30px;
+        line-height: 0;
+    }
+}
+
+.scoreboard__row__scoring {
+    font-size: 12px;
+}
+
+.scoreboard__row__score {
+
+}
+
+.scoreboard__row__score_temporary {
+    color: gray;
+}
+
+.scoreboard__row_title {
+    font-weight: 700;
+
+    &:not(:first-child) {
+        margin: 6px 0 0;
+        text-align: center;
+    }
+}
+
+.dice_board__dice_list {
+    margin: 0;
+    padding: 0;
+}
+
+.dice_board__dice_list_item {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.dice_board__dice {
+    font-size: 64px;
+    line-height: 64px;
+    margin: -3px 0 3px;
+}

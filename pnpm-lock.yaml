@@ -23,6 +23,15 @@ importers:
       '@simplewebauthn/server':
         specifier: ^13.1.1
         version: 13.1.1
+      '@types/lodash':
+        specifier: ^4.17.16
+        version: 4.17.16
+      classnames:
+        specifier: ^2.5.1
+        version: 2.5.1
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
     devDependencies:
       '@types/node':
         specifier: ^22.14.0
@@ -897,6 +906,9 @@ packages:
   '@types/jsonfile@6.1.4':
     resolution: {integrity: sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==}
 
+  '@types/lodash@4.17.16':
+    resolution: {integrity: sha512-HX7Em5NYQAXKW+1T+FiuG27NGwzJfCX3s1GjOa7ujxZa52kjJLOr4FUxT+giF6Tgxv1e+/czV/iTtBw27WTU9g==}
+
   '@types/node@22.14.1':
     resolution: {integrity: sha512-u0HuPQwe/dHrItgHHpmw3N2fYCR6x4ivMNbPHRkBVP4CvN+kiRrKHWk3i8tXiO/joPwXLMYvF9TTF0eqgHIuOw==}
 
@@ -1128,6 +1140,9 @@ packages:
   chrome-trace-event@1.0.4:
     resolution: {integrity: sha512-rNjApaLzuwaOTjCiT8lSDdGN1APCiqkChLMJxJPWLunPAt5fy8xgU9/jNOchV84wfIxrA0lRQB7oCT8jrn/wrQ==}
     engines: {node: '>=6.0'}
+
+  classnames@2.5.1:
+    resolution: {integrity: sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==}
 
   code-block-writer@13.0.3:
     resolution: {integrity: sha512-Oofo0pq3IKnsFtuHqSF7TqBfr71aeyZDVJ0HpmqB7FBM2qEigL0iPONSCZSO9pE9dZTAxANe5XHG9Uy0YMv8cg==}
@@ -2899,6 +2914,8 @@ snapshots:
     dependencies:
       '@types/node': 22.14.1
 
+  '@types/lodash@4.17.16': {}
+
   '@types/node@22.14.1':
     dependencies:
       undici-types: 6.21.0
@@ -3172,6 +3189,8 @@ snapshots:
   caniuse-lite@1.0.30001715: {}
 
   chrome-trace-event@1.0.4: {}
+
+  classnames@2.5.1: {}
 
   code-block-writer@13.0.3: {}
 

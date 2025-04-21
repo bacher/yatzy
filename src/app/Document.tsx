@@ -7,7 +7,7 @@ export const Document: FC<{ children: ReactNode }> = ({ children }) => (
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <title>Yatzy game</title>
       <link rel="preload" href="/src/client.tsx" as="script" />
-      <link rel="stylesheet" href="/src/app/global.css" />
+      <link rel="stylesheet" href="/css/global.css" />
     </head>
     <body>
       <div id="root">{children}</div>
