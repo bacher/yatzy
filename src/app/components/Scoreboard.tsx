@@ -1,16 +1,16 @@
 import {
-  lowerSections,
-  LowerSectionType,
+  lowerCategories,
+  LowerCategory,
   Player,
   TotalScore,
-  upperSections,
-  UpperSectionType,
+  upperCategories,
+  UpperCategory,
 } from "@/logic/types";
 import classNames from "classnames";
 import { diceSymbols, upperCategoryToDice } from "@/logic/consts";
 import { lowerFirst } from "lodash";
 
-const upperSectionTitles: Record<UpperSectionType, string> = {
+const upperSectionTitles: Record<UpperCategory, string> = {
   ones: "Aces",
   twos: "Twos",
   threes: "Threes",
@@ -19,9 +19,9 @@ const upperSectionTitles: Record<UpperSectionType, string> = {
   sixes: "Sixes",
 };
 
-const lowerSectionTitles: Record<LowerSectionType, string> = {
-  "3_kind": "3 of a kind",
-  "4_kind": "4 of a kind",
+const lowerSectionTitles: Record<LowerCategory, string> = {
+  kind_3: "3 of a kind",
+  kind_4: "4 of a kind",
   full_house: "Full house",
   small_straight: "Small straight",
   large_straight: "Large straight",
@@ -30,15 +30,15 @@ const lowerSectionTitles: Record<LowerSectionType, string> = {
   yatzy_bonus: "Yatzy Bonus",
 };
 
-const lowerSectionHints: Partial<Record<LowerSectionType, string>> = {
+const lowerSectionHints: Partial<Record<LowerCategory, string>> = {
   small_straight: "Sequence of 4",
   large_straight: "Sequence of 5",
   yatzy: "5 of a kind",
 };
 
-const lowerSectionScoring: Record<LowerSectionType, string> = {
-  "3_kind": "Add total of all dice",
-  "4_kind": "Add total of all dice",
+const lowerSectionScoring: Record<LowerCategory, string> = {
+  kind_3: "Add total of all dice",
+  kind_4: "Add total of all dice",
   full_house: "Score 25",
   small_straight: "Score 30",
   large_straight: "Score 40",
@@ -48,13 +48,13 @@ const lowerSectionScoring: Record<LowerSectionType, string> = {
 };
 
 export type ScoreboardCategoryScore = {
-  score: number;
-  isTemporary: boolean;
+  score: number | undefined;
+  possibleScore: number | undefined;
 };
 
 export type ScoreboardScoreData = {
-  upperSection: Partial<Record<UpperSectionType, ScoreboardCategoryScore>>;
-  lowerSection: Partial<Record<LowerSectionType, ScoreboardCategoryScore>>;
+  upperSection: Record<UpperCategory, ScoreboardCategoryScore>;
+  lowerSection: Record<LowerCategory, ScoreboardCategoryScore>;
 };
 
 export type ScoreboardPlayer = Omit<Player, "scoreData"> & {
@@ -64,25 +64,55 @@ export type ScoreboardPlayer = Omit<Player, "scoreData"> & {
 
 const ScoreCell = ({
   score,
+  clickable,
+  onClick,
 }: {
-  score: ScoreboardCategoryScore | undefined;
+  score: ScoreboardCategoryScore;
+  clickable: boolean;
+  onClick: () => void;
 }) => {
+  let scoreString: string | undefined;
+
+  if (score.possibleScore !== undefined) {
+    if (score.score !== undefined) {
+      scoreString = `+${score.possibleScore - score.score}`;
+    } else {
+      scoreString = `${score.possibleScore}`;
+    }
+  } else if (score.score !== undefined) {
+    scoreString = `${score.score}`;
+  }
+
   return (
-    <div
+    <button
+      type="button"
+      disabled={!clickable}
       className={classNames("scoreboard__row__score", {
-        ["scoreboard__row__score_temporary"]: score?.isTemporary,
+        ["scoreboard__row__score_temporary"]: score.score == undefined,
+        ["scoreboard__row__score_clickable"]: clickable,
+        ["scoreboard__row__score_empty"]: !scoreString,
       })}
+      onClick={onClick}
     >
-      {score?.score}
-    </div>
+      {scoreString}
+    </button>
   );
 };
 
 type ScoreboardProps = {
   players: ScoreboardPlayer[];
+  activePlayerId: string;
+  onCategorySelect: (
+    categoryId: UpperCategory | LowerCategory,
+    updatedScore: number,
+  ) => void;
 };
 
-export const Scoreboard = ({ players }: ScoreboardProps) => {
+export const Scoreboard = ({
+  players,
+  activePlayerId,
+  onCategorySelect,
+}: ScoreboardProps) => {
   return (
     <div className="scoreboard">
       <div className="scoreboard__row scoreboard__row_title">
@@ -92,25 +122,41 @@ export const Scoreboard = ({ players }: ScoreboardProps) => {
           <div key={id}>{name}</div>
         ))}
       </div>
-      {upperSections.map((id) => (
+      {upperCategories.map((id) => (
         <div key={id} className="scoreboard__row">
-          <div className="scoreboard__row__category scoreboard__row__category_with_icon">
-            <span>{diceSymbols[upperCategoryToDice[id]]}</span>{" "}
+          <div className="scoreboard__row__category">
+            <span className="scoreboard__row__category_icon">
+              {diceSymbols[upperCategoryToDice[id]]}
+            </span>{" "}
             {upperSectionTitles[id]}
           </div>
           <div className="scoreboard__row__scoring">
             Add only {lowerFirst(upperSectionTitles[id])}
           </div>
-          {players.map(({ playerInfo, scoreData }) => (
-            <ScoreCell key={playerInfo.id} score={scoreData.upperSection[id]} />
-          ))}
+          {players.map(({ playerInfo, scoreData }) => {
+            const score = scoreData.upperSection[id];
+
+            return (
+              <ScoreCell
+                key={playerInfo.id}
+                score={score}
+                clickable={
+                  score.score === undefined && playerInfo.id === activePlayerId
+                }
+                onClick={() => {
+                  onCategorySelect(id, score.possibleScore ?? 0);
+                }}
+              />
+            );
+          })}
         </div>
       ))}
       <div className="scoreboard__row">
         <div>Total Score</div>
         <div></div>
-        <div></div>
-        <div></div>
+        {players.map(({ playerInfo, total }) => (
+          <div key={playerInfo.id}>{total.upperTotal}</div>
+        ))}
       </div>
       <div className="scoreboard__row">
         <div className="scoreboard__row__category scoreboard__row__category_with_hint">
@@ -120,14 +166,16 @@ export const Scoreboard = ({ players }: ScoreboardProps) => {
           </span>
         </div>
         <div className="scoreboard__row__scoring">Score 35</div>
-        <div></div>
-        <div></div>
+        {players.map(({ playerInfo, total }) => (
+          <div key={playerInfo.id}>{total.upperBonus}</div>
+        ))}
       </div>
       <div className="scoreboard__row">
         <div>Total</div>
         <div></div>
-        <div></div>
-        <div></div>
+        {players.map(({ playerInfo, total }) => (
+          <div key={playerInfo.id}>{total.upperTotal}</div>
+        ))}
       </div>
       <div className="scoreboard__row scoreboard__row_title">
         <div>Lower section</div>
@@ -135,7 +183,7 @@ export const Scoreboard = ({ players }: ScoreboardProps) => {
         <div></div>
         <div></div>
       </div>
-      {lowerSections.map((id) => (
+      {lowerCategories.map((id) => (
         <div key={id} className="scoreboard__row">
           <div className="scoreboard__row__category scoreboard__row__category_with_hint">
             {lowerSectionTitles[id]}
@@ -151,20 +199,39 @@ export const Scoreboard = ({ players }: ScoreboardProps) => {
           <div className="scoreboard__row__scoring">
             {lowerSectionScoring[id]}
           </div>
-          {players.map(({ playerInfo, scoreData }) => (
-            <ScoreCell key={playerInfo.id} score={scoreData.lowerSection[id]} />
-          ))}
+          {players.map(({ playerInfo, scoreData }) => {
+            const score = scoreData.lowerSection[id];
+
+            return (
+              <ScoreCell
+                key={playerInfo.id}
+                score={score}
+                clickable={
+                  score.score === undefined &&
+                  playerInfo.id === activePlayerId &&
+                  (id !== "yatzy_bonus" || score.possibleScore !== undefined)
+                }
+                onClick={() => {
+                  onCategorySelect(id, score.possibleScore ?? 0);
+                }}
+              />
+            );
+          })}
         </div>
       ))}
       <div className="scoreboard__row">
         <div>Total</div>
         <div></div>
-        <div></div>
+        {players.map(({ playerInfo, total }) => (
+          <div key={playerInfo.id}>{total.lowerTotal}</div>
+        ))}
       </div>
       <div className="scoreboard__row">
         <div>Grand Total</div>
         <div></div>
-        <div></div>
+        {players.map(({ playerInfo, total }) => (
+          <div key={playerInfo.id}>{total.grandTotal}</div>
+        ))}
       </div>
     </div>
   );

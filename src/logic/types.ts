@@ -1,4 +1,4 @@
-export const upperSections = [
+export const upperCategories = [
   "ones",
   "twos",
   "threes",
@@ -7,11 +7,15 @@ export const upperSections = [
   "sixes",
 ] as const;
 
-export type UpperSectionType = (typeof upperSections)[number];
+export type UpperCategory = (typeof upperCategories)[number];
 
-export const lowerSections = [
-  "3_kind",
-  "4_kind",
+export function isUpperCategory(category: string): category is UpperCategory {
+  return upperCategories.includes(category as UpperCategory);
+}
+
+export const lowerCategories = [
+  "kind_3",
+  "kind_4",
   "full_house",
   "small_straight",
   "large_straight",
@@ -20,7 +24,11 @@ export const lowerSections = [
   "yatzy_bonus",
 ] as const;
 
-export type LowerSectionType = (typeof lowerSections)[number];
+export type LowerCategory = (typeof lowerCategories)[number];
+
+export function isLowerCategory(category: string): category is LowerCategory {
+  return lowerCategories.includes(category as LowerCategory);
+}
 
 export type Player = {
   playerInfo: PlayerInfo;
@@ -33,8 +41,8 @@ export type PlayerInfo = {
 };
 
 export type PlayerScoreData = {
-  upperSection: Partial<Record<UpperSectionType, number>>;
-  lowerSection: Partial<Record<LowerSectionType, number>>;
+  upperSection: Partial<Record<UpperCategory, number>>;
+  lowerSection: Partial<Record<LowerCategory, number>>;
 };
 
 export const diceOrdered = [1, 2, 3, 4, 5, 6] as const;
@@ -47,7 +55,9 @@ export type DiceState = {
 };
 
 export type TotalScore = {
-  upper: number;
-  lower: number;
-  total: number;
+  upperIntermediate: number;
+  upperBonus: number;
+  upperTotal: number;
+  lowerTotal: number;
+  grandTotal: number;
 };

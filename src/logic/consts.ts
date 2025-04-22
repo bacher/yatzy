@@ -1,4 +1,4 @@
-import { Dice, UpperSectionType } from "@/logic/types";
+import { Dice, UpperCategory } from "@/logic/types";
 
 export const diceSymbols = {
   1: "⚀",
@@ -9,7 +9,7 @@ export const diceSymbols = {
   6: "⚅",
 };
 
-export const diceToUpperCategory: Record<Dice, UpperSectionType> = {
+export const diceToUpperCategory: Record<Dice, UpperCategory> = {
   1: "ones",
   2: "twos",
   3: "threes",
@@ -18,7 +18,7 @@ export const diceToUpperCategory: Record<Dice, UpperSectionType> = {
   6: "sixes",
 };
 
-export const upperCategoryToDice: Record<UpperSectionType, Dice> = {
+export const upperCategoryToDice: Record<UpperCategory, Dice> = {
   ones: 1,
   twos: 2,
   threes: 3,

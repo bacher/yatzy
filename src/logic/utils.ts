@@ -23,15 +23,10 @@ export function mapDice(
   return times(5, iterator) as DiceState["diceSet"];
 }
 
-function convertScore(
-  score: number | undefined,
-): ScoreboardCategoryScore | undefined {
-  if (!score) {
-    return undefined;
-  }
+function convertScore(score: number | undefined): ScoreboardCategoryScore {
   return {
     score,
-    isTemporary: false,
+    possibleScore: undefined,
   };
 }
 
@@ -54,13 +49,14 @@ export function addTemporaryScore(
       sixes: convertScore(scoreData.upperSection.sixes),
     },
     lowerSection: {
-      "3_kind": convertScore(scoreData.lowerSection["3_kind"]),
-      "4_kind": convertScore(scoreData.lowerSection["4_kind"]),
+      kind_3: convertScore(scoreData.lowerSection.kind_3),
+      kind_4: convertScore(scoreData.lowerSection.kind_4),
       full_house: convertScore(scoreData.lowerSection.full_house),
       small_straight: convertScore(scoreData.lowerSection.small_straight),
       large_straight: convertScore(scoreData.lowerSection.large_straight),
       chance: convertScore(scoreData.lowerSection.chance),
       yatzy: convertScore(scoreData.lowerSection.yatzy),
+      yatzy_bonus: convertScore(scoreData.lowerSection.yatzy_bonus),
     },
   };
 
@@ -89,47 +85,38 @@ export function addTemporaryScore(
   for (const dice of diceOrdered) {
     const category = diceToUpperCategory[dice];
 
-    if (!mergedScoreData.upperSection[category]) {
+    if (mergedScoreData.upperSection[category].score === undefined) {
       if (diceCount[dice] >= 1) {
-        mergedScoreData.upperSection[category] = {
-          score: diceCount[dice] * dice,
-          isTemporary: true,
-        };
+        mergedScoreData.upperSection[category].possibleScore =
+          diceCount[dice] * dice;
       }
     }
   }
 
-  if (!mergedScoreData.lowerSection["3_kind"]) {
+  if (mergedScoreData.lowerSection["kind_3"].score === undefined) {
     if (Object.values(diceCount).some((count) => count >= 3)) {
-      mergedScoreData.lowerSection["3_kind"] = {
-        score: calculateDiceSum(diceSet),
-        isTemporary: true,
-      };
+      mergedScoreData.lowerSection["kind_3"].possibleScore =
+        calculateDiceSum(diceSet);
     }
   }
 
-  if (!mergedScoreData.lowerSection["4_kind"]) {
+  if (mergedScoreData.lowerSection["kind_4"].score === undefined) {
     if (Object.values(diceCount).some((count) => count >= 4)) {
-      mergedScoreData.lowerSection["4_kind"] = {
-        score: calculateDiceSum(diceSet),
-        isTemporary: true,
-      };
+      mergedScoreData.lowerSection["kind_4"].possibleScore =
+        calculateDiceSum(diceSet);
     }
   }
 
-  if (!mergedScoreData.lowerSection["full_house"]) {
+  if (mergedScoreData.lowerSection["full_house"].score === undefined) {
     if (
       Object.values(diceCount).some((count) => count === 3) &&
       Object.values(diceCount).some((count) => count === 2)
     ) {
-      mergedScoreData.lowerSection["full_house"] = {
-        score: 25,
-        isTemporary: true,
-      };
+      mergedScoreData.lowerSection["full_house"].possibleScore = 25;
     }
   }
 
-  if (!mergedScoreData.lowerSection["small_straight"]) {
+  if (mergedScoreData.lowerSection["small_straight"].score === undefined) {
     for (let start = 0; start < 2; start += 1) {
       const a = sortedDice[start];
       const b = sortedDice[start + 1];
@@ -137,15 +124,12 @@ export function addTemporaryScore(
       const d = sortedDice[start + 3];
 
       if (a === b - 1 && b === c - 1 && c === d - 1) {
-        mergedScoreData.lowerSection["small_straight"] = {
-          score: 30,
-          isTemporary: true,
-        };
+        mergedScoreData.lowerSection["small_straight"].possibleScore = 30;
       }
     }
   }
 
-  if (!mergedScoreData.lowerSection["large_straight"]) {
+  if (mergedScoreData.lowerSection["large_straight"].score === undefined) {
     const a = sortedDice[0];
     const b = sortedDice[1];
     const c = sortedDice[2];
@@ -153,24 +137,16 @@ export function addTemporaryScore(
     const e = sortedDice[4];
 
     if (a === b - 1 && b === c - 1 && c === d - 1 && d === e - 1) {
-      mergedScoreData.lowerSection["large_straight"] = {
-        score: 40,
-        isTemporary: true,
-      };
+      mergedScoreData.lowerSection["large_straight"].possibleScore = 40;
     }
   }
 
   if (Object.values(diceCount).some((count) => count === 5)) {
-    if (!mergedScoreData.lowerSection["yatzy"]) {
-      mergedScoreData.lowerSection["yatzy"] = {
-        score: 50,
-        isTemporary: true,
-      };
+    if (mergedScoreData.lowerSection["yatzy"].score === undefined) {
+      mergedScoreData.lowerSection["yatzy"].possibleScore = 50;
     } else {
-      mergedScoreData.lowerSection["yatzy_bonus"] = {
-        score: 100,
-        isTemporary: true,
-      };
+      mergedScoreData.lowerSection["yatzy_bonus"].possibleScore =
+        (mergedScoreData.lowerSection["yatzy_bonus"].score ?? 0) + 100;
     }
   }
 
@@ -178,7 +154,7 @@ export function addTemporaryScore(
 }
 
 export function getTotalScore(scoreData: PlayerScoreData): TotalScore {
-  const upperSectionTotal = Object.values(scoreData.upperSection).reduce(
+  const upperIntermediate = Object.values(scoreData.upperSection).reduce(
     (acc, categoryScore) => acc + (categoryScore ?? 0),
     0,
   );
@@ -187,9 +163,14 @@ export function getTotalScore(scoreData: PlayerScoreData): TotalScore {
     0,
   );
 
+  const upperBonus = upperIntermediate >= 63 ? 35 : 0;
+  const upper = upperIntermediate + upperBonus;
+
   return {
-    upper: upperSectionTotal,
-    lower: lowerSectionTotal,
-    total: upperSectionTotal + lowerSectionTotal,
+    upperIntermediate,
+    upperBonus,
+    upperTotal: upper,
+    lowerTotal: lowerSectionTotal,
+    grandTotal: upper + lowerSectionTotal,
   };
 }

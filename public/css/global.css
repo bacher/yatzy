@@ -71,12 +71,10 @@ h1, h2, h3, h4, h5, h6 {
     justify-content: space-between;
 }
 
-.scoreboard__row__category_with_icon {
-    & > span {
-        margin: -1px 0 1px;
-        font-size: 30px;
-        line-height: 0;
-    }
+.scoreboard__row__category_icon {
+    margin: -1px 0 1px;
+    font-size: 30px;
+    line-height: 0;
 }
 
 .scoreboard__row__scoring {
@@ -84,11 +82,33 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .scoreboard__row__score {
-
+    display: block;
+    align-self: stretch;
+    appearance: none;
+    margin: 0 2px;
+    border: none;
+    border-radius: 5px;
+    background: none;
+    color: inherit;
 }
 
 .scoreboard__row__score_temporary {
     color: gray;
+}
+
+.scoreboard__row__score_clickable {
+    transition: background 0.2s;
+    cursor: pointer;
+
+    &:hover {
+        background: oklch(0.938 0.031 248.159);
+    }
+}
+
+.scoreboard__row__score_clickable.scoreboard__row__score_empty {
+    &:hover::before {
+        content: '0';
+    }
 }
 
 .scoreboard__row_title {
@@ -96,7 +116,6 @@ h1, h2, h3, h4, h5, h6 {
 
     &:not(:first-child) {
         margin: 6px 0 0;
-        text-align: center;
     }
 }
 
