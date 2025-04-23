@@ -25,11 +25,23 @@ function getEmptyScoreData(): PlayerScoreData {
   };
 }
 
-type GameState = "game_start" | "game_over";
+type GamePlayState = {
+  state: "game_start";
+  currentPlayerId: string;
+  turn: number;
+  diceState: DiceState | undefined;
+  rollNumber: number;
+};
+
+type GameOverState = {
+  state: "game_over";
+};
+
+type GameState = GamePlayState | GameOverState;
+
+type GameStateType = GameState["state"];
 
 export const Board = () => {
-  const [gameState, setGameState] = useState<GameState>("game_start");
-
   const [players, setPlayers] = useState<Player[]>(() => [
     {
       playerInfo: {
@@ -47,17 +59,23 @@ export const Board = () => {
     },
   ]);
 
-  const [currentPlayerId, setCurrentPlayerId] = useState(
-    players[0].playerInfo.id,
-  );
-  const currentPlayer = useMemo(
-    () => players.find(({ playerInfo }) => playerInfo.id === currentPlayerId)!,
-    [currentPlayerId, players],
-  );
+  const [gameState, setGameState] = useState<GameState>(() => ({
+    state: "game_start",
+    currentPlayerId: players[0].playerInfo.id,
+    turn: 0,
+    rollNumber: 0,
+    diceState: undefined,
+  }));
 
-  const [turn, setTurn] = useState(0);
-  const [diceState, setDiceState] = useState<DiceState | undefined>();
-  const [rollNumber, setRollNumber] = useState(0);
+  const getPlayerById = (id: string): Player => {
+    const player = players.find(({ playerInfo }) => playerInfo.id === id);
+
+    if (!player) {
+      throw new Error("Invalid player id");
+    }
+
+    return player;
+  };
 
   const scoreboardPlayers = useMemo<ScoreboardPlayer[]>(
     () =>
@@ -65,39 +83,48 @@ export const Board = () => {
         ...player,
         scoreData: addTemporaryScore(
           player.scoreData,
-          player.playerInfo.id === currentPlayerId && gameState === "game_start"
-            ? diceState
+          gameState.state === "game_start" &&
+            gameState.currentPlayerId === player.playerInfo.id
+            ? gameState.diceState
             : undefined,
         ),
         total: getTotalScore(player.scoreData),
       })),
-    [players, diceState],
+    [players, gameState],
   );
 
   const onRollClick = () => {
-    if (diceState && diceState.keepIndexes.length > 0) {
-      const { diceSet, keepIndexes } = diceState;
-
-      setDiceState({
-        ...diceState,
-        diceSet: mapDice((diceIndex) =>
-          keepIndexes.includes(diceIndex) ? diceSet[diceIndex] : randomDice(),
-        ),
-      });
-    } else {
-      setDiceState({
-        diceSet: mapDice(randomDice),
-        keepIndexes: [],
-      });
+    if (gameState.state !== "game_start") {
+      return;
     }
 
-    setRollNumber((rollNumber) => rollNumber + 1);
+    const updatedState: GamePlayState = { ...gameState };
+
+    if (
+      updatedState.diceState &&
+      updatedState.diceState.keepIndexes.length > 0
+    ) {
+      const { diceSet, keepIndexes } = updatedState.diceState;
+
+      updatedState.diceState.diceSet = mapDice((diceIndex) =>
+        keepIndexes.includes(diceIndex) ? diceSet[diceIndex] : randomDice(),
+      );
+    } else {
+      updatedState.diceState = {
+        diceSet: mapDice(randomDice),
+        keepIndexes: [],
+      };
+    }
+
+    updatedState.rollNumber += 1;
+
+    setGameState(updatedState);
   };
 
   return (
     <div className="board">
       <div className="board__panel">
-        {gameState === "game_over" ? (
+        {gameState.state === "game_over" ? (
           <>
             <GameOverResults scoreboardPlayers={scoreboardPlayers} />
             <div>
@@ -110,11 +137,13 @@ export const Board = () => {
                       scoreData: getEmptyScoreData(),
                     })),
                   );
-                  setCurrentPlayerId(players[0].playerInfo.id);
-                  setTurn(0);
-                  setRollNumber(0);
-                  setDiceState(undefined);
-                  setGameState("game_start");
+                  setGameState({
+                    state: "game_start",
+                    currentPlayerId: players[0].playerInfo.id,
+                    turn: 0,
+                    rollNumber: 0,
+                    diceState: undefined,
+                  });
                 }}
               >
                 Start new game
@@ -123,29 +152,43 @@ export const Board = () => {
           </>
         ) : (
           <>
-            <h2>Turn: {turn + 1} of 13</h2>
-            <h2>Current player: {currentPlayer.playerInfo.name}</h2>
-            {diceState ? (
-              <DiceBoard
-                diceSet={diceState.diceSet}
-                keepIndexes={diceState.keepIndexes}
-                allowKeeping={rollNumber <= 2}
-                onKeepToggle={(diceIndex, keep) => {
-                  setDiceState({
-                    ...diceState,
-                    keepIndexes: keep
-                      ? [...diceState.keepIndexes, diceIndex]
-                      : diceState.keepIndexes.filter((i) => i !== diceIndex),
-                  });
-                }}
-              />
+            <h2>Turn: {gameState.turn + 1} of 13</h2>
+            <h2>
+              Current player:{" "}
+              {getPlayerById(gameState.currentPlayerId).playerInfo.name}
+            </h2>
+            {gameState.diceState ? (
+              (() => {
+                const { diceState } = gameState;
+
+                return (
+                  <DiceBoard
+                    diceSet={gameState.diceState.diceSet}
+                    keepIndexes={gameState.diceState.keepIndexes}
+                    allowKeeping={gameState.rollNumber <= 2}
+                    onKeepToggle={(diceIndex, keep) => {
+                      setGameState({
+                        ...gameState,
+                        diceState: {
+                          ...diceState,
+                          keepIndexes: keep
+                            ? [...diceState.keepIndexes, diceIndex]
+                            : diceState.keepIndexes.filter(
+                                (i) => i !== diceIndex,
+                              ),
+                        },
+                      });
+                    }}
+                  />
+                );
+              })()
             ) : (
               <div>Your turn</div>
             )}
-            {rollNumber <= 2 ? (
+            {gameState.rollNumber <= 2 ? (
               <div>
                 <button type="button" onClick={onRollClick}>
-                  {rollNumber === 0 ? "Roll dice" : "Reroll dice"}
+                  {gameState.rollNumber === 0 ? "Roll dice" : "Reroll dice"}
                 </button>
               </div>
             ) : (
@@ -157,11 +200,19 @@ export const Board = () => {
       <div className="board__panel">
         <Scoreboard
           players={scoreboardPlayers}
-          activePlayerId={currentPlayerId}
+          activePlayerId={
+            gameState.state === "game_start"
+              ? gameState.currentPlayerId
+              : undefined
+          }
           onCategorySelect={(categoryId, updatedScore) => {
+            if (gameState.state !== "game_start") {
+              throw new Error("Invalid state");
+            }
+
             setPlayers((players) =>
               players.map((player) => {
-                if (player.playerInfo.id === currentPlayerId) {
+                if (player.playerInfo.id === gameState.currentPlayerId) {
                   const section = isUpperCategory(categoryId)
                     ? "upperSection"
                     : "lowerSection";
@@ -181,21 +232,28 @@ export const Board = () => {
               }),
             );
 
-            if (currentPlayerId === last(players)!.playerInfo.id) {
-              if (turn === 12) {
-                setGameState("game_over");
+            const updatedGameState: GamePlayState = { ...gameState };
+
+            if (gameState.currentPlayerId === last(players)!.playerInfo.id) {
+              if (gameState.turn === 12) {
+                setGameState({
+                  state: "game_over",
+                });
                 return;
               }
-              setTurn((turn) => turn + 1);
-              setCurrentPlayerId(players[0].playerInfo.id);
+              updatedGameState.turn += 1;
+              updatedGameState.currentPlayerId = players[0].playerInfo.id;
             } else {
-              setCurrentPlayerId(
-                players[players.indexOf(currentPlayer) + 1].playerInfo.id,
-              );
+              updatedGameState.currentPlayerId =
+                players[
+                  players.indexOf(getPlayerById(gameState.currentPlayerId)) + 1
+                ].playerInfo.id;
             }
 
-            setRollNumber(0);
-            setDiceState(undefined);
+            updatedGameState.rollNumber = 0;
+            updatedGameState.diceState = undefined;
+
+            setGameState(updatedGameState);
           }}
         />
       </div>

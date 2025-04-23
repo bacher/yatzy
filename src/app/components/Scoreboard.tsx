@@ -101,7 +101,7 @@ const ScoreCell = ({
 
 type ScoreboardProps = {
   players: ScoreboardPlayer[];
-  activePlayerId: string;
+  activePlayerId: string | undefined;
   onCategorySelect: (
     categoryId: UpperCategory | LowerCategory,
     updatedScore: number,
@@ -141,7 +141,9 @@ export const Scoreboard = ({
                 key={playerInfo.id}
                 score={score}
                 clickable={
-                  score.score === undefined && playerInfo.id === activePlayerId
+                  score.score === undefined &&
+                  activePlayerId !== undefined &&
+                  playerInfo.id === activePlayerId
                 }
                 onClick={() => {
                   onCategorySelect(id, score.possibleScore ?? 0);
@@ -208,6 +210,7 @@ export const Scoreboard = ({
                 score={score}
                 clickable={
                   score.score === undefined &&
+                  activePlayerId !== undefined &&
                   playerInfo.id === activePlayerId &&
                   (id !== "yatzy_bonus" || score.possibleScore !== undefined)
                 }
