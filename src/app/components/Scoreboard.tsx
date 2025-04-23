@@ -87,7 +87,7 @@ const ScoreCell = ({
     <button
       type="button"
       disabled={!clickable}
-      className={classNames("scoreboard__row__score", {
+      className={classNames("g-button-reset", "scoreboard__row__score", {
         ["scoreboard__row__score_temporary"]: score.score == undefined,
         ["scoreboard__row__score_clickable"]: clickable,
         ["scoreboard__row__score_empty"]: !scoreString,

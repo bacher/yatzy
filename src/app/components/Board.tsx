@@ -165,7 +165,13 @@ export const Board = () => {
                   <DiceBoard
                     diceSet={gameState.diceState.diceSet}
                     keepIndexes={gameState.diceState.keepIndexes}
-                    allowKeeping={gameState.rollNumber <= 2}
+                    rollButton={
+                      gameState.rollNumber <= 2 ? (
+                        <button type="button" onClick={onRollClick}>
+                          Reroll dice
+                        </button>
+                      ) : undefined
+                    }
                     onKeepToggle={(diceIndex, keep) => {
                       setGameState({
                         ...gameState,
@@ -185,15 +191,14 @@ export const Board = () => {
             ) : (
               <div>Your turn</div>
             )}
-            {gameState.rollNumber <= 2 ? (
+            {gameState.diceState === undefined && (
               <div>
                 <button type="button" onClick={onRollClick}>
-                  {gameState.rollNumber === 0 ? "Roll dice" : "Reroll dice"}
+                  Roll dice
                 </button>
               </div>
-            ) : (
-              <div>Select category</div>
             )}
+            {gameState.rollNumber > 2 && <div>Select category</div>}
           </>
         )}
       </div>
