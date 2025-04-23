@@ -1,4 +1,4 @@
-import { times } from "lodash";
+import { sortBy, sortedUniq, times } from "lodash";
 
 import {
   Dice,
@@ -65,7 +65,8 @@ export function addTemporaryScore(
   }
 
   const { diceSet } = diceState;
-  const sortedDice = [...diceSet].sort((a, b) => a - b);
+  const sortedDice = sortBy(diceSet);
+  const unduplicatedSortedDice = sortedUniq(sortedDice);
 
   const diceCount: Record<Dice, number> = diceSet.reduce(
     (acc, diceValue) => ({
@@ -117,11 +118,15 @@ export function addTemporaryScore(
   }
 
   if (mergedScoreData.lowerSection["small_straight"].score === undefined) {
-    for (let start = 0; start < 2; start += 1) {
-      const a = sortedDice[start];
-      const b = sortedDice[start + 1];
-      const c = sortedDice[start + 2];
-      const d = sortedDice[start + 3];
+    for (
+      let start = 0;
+      start <= unduplicatedSortedDice.length - 4;
+      start += 1
+    ) {
+      const a = unduplicatedSortedDice[start];
+      const b = unduplicatedSortedDice[start + 1];
+      const c = unduplicatedSortedDice[start + 2];
+      const d = unduplicatedSortedDice[start + 3];
 
       if (a === b - 1 && b === c - 1 && c === d - 1) {
         mergedScoreData.lowerSection["small_straight"].possibleScore = 30;
