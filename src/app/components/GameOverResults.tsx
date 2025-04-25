@@ -23,8 +23,10 @@ export const GameOverResults = ({
     <>
       <h2>Game results</h2>
       {(() => {
-        if (winners.length === scoreboardPlayers.length) {
-          return <h2>Draw</h2>;
+        if (scoreboardPlayers.length === 1) {
+          return undefined;
+        } else if (winners.length === scoreboardPlayers.length) {
+          return <h2>Tie</h2>;
         } else if (winners.length === 1) {
           const winner = winners[0];
 
