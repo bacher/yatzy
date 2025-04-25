@@ -1,4 +1,4 @@
-import { sortBy, sortedUniq, times } from "lodash";
+import { sortBy, sortedUniq, sum, times } from "lodash";
 
 import {
   Dice,
@@ -161,6 +161,10 @@ export function addTemporaryScore(
     if (isJoker || (a === b - 1 && b === c - 1 && c === d - 1 && d === e - 1)) {
       mergedScoreData.lowerSection["large_straight"].possibleScore = 40;
     }
+  }
+
+  if (mergedScoreData.lowerSection["chance"].score === undefined) {
+    mergedScoreData.lowerSection["chance"].possibleScore = sum(diceSet);
   }
 
   if (isYatzy) {
