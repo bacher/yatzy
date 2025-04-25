@@ -1,4 +1,6 @@
-import { useState } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import { Page } from "@/app/components/Page";
 
 const PLAYER_NAMES_STORAGE_KEY = "yatzy_players";
@@ -13,21 +15,23 @@ type NewGameProps = {
 
 export const NewGame = ({ onStartGame }: NewGameProps) => {
   const [players, setPlayers] = useState<NewGamePlayer[]>(() => {
-    try {
-      const playersJson = localStorage.getItem(PLAYER_NAMES_STORAGE_KEY);
-      if (playersJson) {
-        return JSON.parse(playersJson);
-      }
-    } catch (error) {
-      console.warn(error);
-    }
-
     return [
       {
         name: "Player 1",
       },
     ];
   });
+
+  useEffect(() => {
+    try {
+      const playersJson = localStorage.getItem(PLAYER_NAMES_STORAGE_KEY);
+      if (playersJson) {
+        setPlayers(JSON.parse(playersJson));
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+  }, []);
 
   return (
     <Page>
