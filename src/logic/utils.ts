@@ -14,7 +14,8 @@ import {
 import { diceToUpperCategory } from "@/logic/consts";
 
 export function randomDice(): Dice {
-  return (Math.floor(Math.random() * 6) + 1) as Dice;
+  return 1;
+  // return (Math.floor(Math.random() * 6) + 1) as Dice;
 }
 
 export function mapDice(
@@ -39,7 +40,6 @@ export function addTemporaryScore(
   diceState: DiceState | undefined,
 ): ScoreboardScoreData {
   const mergedScoreData: ScoreboardScoreData = {
-    ...scoreData,
     upperSection: {
       ones: convertScore(scoreData.upperSection.ones),
       twos: convertScore(scoreData.upperSection.twos),
@@ -56,8 +56,8 @@ export function addTemporaryScore(
       large_straight: convertScore(scoreData.lowerSection.large_straight),
       chance: convertScore(scoreData.lowerSection.chance),
       yatzy: convertScore(scoreData.lowerSection.yatzy),
-      yatzy_bonus: convertScore(scoreData.lowerSection.yatzy_bonus),
     },
+    yatzyBonusAvailable: false,
   };
 
   if (!diceState) {
@@ -82,6 +82,17 @@ export function addTemporaryScore(
       6: 0,
     },
   );
+
+  const isYatzy = Object.values(diceCount).some((count) => count === 5);
+
+  mergedScoreData.yatzyBonusAvailable =
+    isYatzy &&
+    scoreData.lowerSection.yatzy !== undefined &&
+    scoreData.lowerSection.yatzy !== 0;
+
+  const isJoker =
+    scoreData.lowerSection.yatzy !== undefined &&
+    scoreData.upperSection[diceToUpperCategory[diceSet[0]]] !== undefined;
 
   for (const dice of diceOrdered) {
     const category = diceToUpperCategory[dice];
@@ -110,48 +121,52 @@ export function addTemporaryScore(
 
   if (mergedScoreData.lowerSection["full_house"].score === undefined) {
     if (
-      Object.values(diceCount).some((count) => count === 3) &&
-      Object.values(diceCount).some((count) => count === 2)
+      isJoker ||
+      (Object.values(diceCount).some((count) => count === 3) &&
+        Object.values(diceCount).some((count) => count === 2))
     ) {
       mergedScoreData.lowerSection["full_house"].possibleScore = 25;
     }
   }
 
   if (mergedScoreData.lowerSection["small_straight"].score === undefined) {
-    for (
-      let start = 0;
-      start <= unduplicatedSortedDice.length - 4;
-      start += 1
-    ) {
-      const a = unduplicatedSortedDice[start];
-      const b = unduplicatedSortedDice[start + 1];
-      const c = unduplicatedSortedDice[start + 2];
-      const d = unduplicatedSortedDice[start + 3];
+    let allowed = false;
 
-      if (a === b - 1 && b === c - 1 && c === d - 1) {
-        mergedScoreData.lowerSection["small_straight"].possibleScore = 30;
+    if (isJoker) {
+      allowed = true;
+    } else {
+      for (
+        let start = 0;
+        start <= unduplicatedSortedDice.length - 4;
+        start += 1
+      ) {
+        const a = unduplicatedSortedDice[start];
+        const b = unduplicatedSortedDice[start + 1];
+        const c = unduplicatedSortedDice[start + 2];
+        const d = unduplicatedSortedDice[start + 3];
+
+        if (a === b - 1 && b === c - 1 && c === d - 1) {
+          allowed = true;
+        }
       }
+    }
+
+    if (allowed) {
+      mergedScoreData.lowerSection["small_straight"].possibleScore = 30;
     }
   }
 
   if (mergedScoreData.lowerSection["large_straight"].score === undefined) {
-    const a = sortedDice[0];
-    const b = sortedDice[1];
-    const c = sortedDice[2];
-    const d = sortedDice[3];
-    const e = sortedDice[4];
+    const [a, b, c, d, e] = sortedDice;
 
-    if (a === b - 1 && b === c - 1 && c === d - 1 && d === e - 1) {
+    if (isJoker || (a === b - 1 && b === c - 1 && c === d - 1 && d === e - 1)) {
       mergedScoreData.lowerSection["large_straight"].possibleScore = 40;
     }
   }
 
-  if (Object.values(diceCount).some((count) => count === 5)) {
+  if (isYatzy) {
     if (mergedScoreData.lowerSection["yatzy"].score === undefined) {
       mergedScoreData.lowerSection["yatzy"].possibleScore = 50;
-    } else {
-      mergedScoreData.lowerSection["yatzy_bonus"].possibleScore =
-        (mergedScoreData.lowerSection["yatzy_bonus"].score ?? 0) + 100;
     }
   }
 
@@ -175,6 +190,7 @@ export function getTotalScore(scoreData: PlayerScoreData): TotalScore {
     upperIntermediate,
     upperBonus,
     upperTotal: upper,
+    lowerBonus: scoreData.yatzyBonus,
     lowerTotal: lowerSectionTotal,
     grandTotal: upper + lowerSectionTotal,
   };

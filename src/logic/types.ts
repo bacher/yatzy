@@ -21,7 +21,6 @@ export const lowerCategories = [
   "large_straight",
   "chance",
   "yatzy",
-  "yatzy_bonus",
 ] as const;
 
 export type LowerCategory = (typeof lowerCategories)[number];
@@ -43,6 +42,7 @@ export type PlayerInfo = {
 export type PlayerScoreData = {
   upperSection: Partial<Record<UpperCategory, number>>;
   lowerSection: Partial<Record<LowerCategory, number>>;
+  yatzyBonus: number;
 };
 
 export const diceOrdered = [1, 2, 3, 4, 5, 6] as const;
@@ -58,6 +58,7 @@ export type TotalScore = {
   upperIntermediate: number;
   upperBonus: number;
   upperTotal: number;
+  lowerBonus: number;
   lowerTotal: number;
   grandTotal: number;
 };

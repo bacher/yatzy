@@ -27,7 +27,6 @@ const lowerSectionTitles: Record<LowerCategory, string> = {
   large_straight: "Large straight",
   chance: "Chance",
   yatzy: "Yatzy",
-  yatzy_bonus: "Yatzy Bonus",
 };
 
 const lowerSectionHints: Partial<Record<LowerCategory, string>> = {
@@ -44,7 +43,6 @@ const lowerSectionScoring: Record<LowerCategory, string> = {
   large_straight: "Score 40",
   chance: "Add total of all 5 dice",
   yatzy: "Score 50",
-  yatzy_bonus: "Score 100 for each bonus",
 };
 
 export type ScoreboardCategoryScore = {
@@ -55,6 +53,7 @@ export type ScoreboardCategoryScore = {
 export type ScoreboardScoreData = {
   upperSection: Record<UpperCategory, ScoreboardCategoryScore>;
   lowerSection: Record<LowerCategory, ScoreboardCategoryScore>;
+  yatzyBonusAvailable: boolean;
 };
 
 export type ScoreboardPlayer = Omit<Player, "scoreData"> & {
@@ -74,7 +73,7 @@ const ScoreCell = ({
   let scoreString: string | undefined;
 
   if (score.possibleScore !== undefined) {
-    if (score.score !== undefined) {
+    if (score.score !== undefined && score.score !== 0) {
       scoreString = `+${score.possibleScore - score.score}`;
     } else {
       scoreString = `${score.possibleScore}`;
@@ -88,7 +87,7 @@ const ScoreCell = ({
       type="button"
       disabled={!clickable}
       className={classNames("g-button-reset", "scoreboard__row__score", {
-        ["scoreboard__row__score_temporary"]: score.score == undefined,
+        ["scoreboard__row__score_temporary"]: score.possibleScore !== undefined,
         ["scoreboard__row__score_clickable"]: clickable,
         ["scoreboard__row__score_empty"]: !scoreString,
       })}
@@ -211,8 +210,7 @@ export const Scoreboard = ({
                 clickable={
                   score.score === undefined &&
                   activePlayerId !== undefined &&
-                  playerInfo.id === activePlayerId &&
-                  (id !== "yatzy_bonus" || score.possibleScore !== undefined)
+                  playerInfo.id === activePlayerId
                 }
                 onClick={() => {
                   onCategorySelect(id, score.possibleScore ?? 0);
@@ -222,6 +220,23 @@ export const Scoreboard = ({
           })}
         </div>
       ))}
+      <div className="scoreboard__row">
+        <div>Yatzy Bonus</div>
+        <div className="scoreboard__row__scoring">Score 100 for each bonus</div>
+        {players.map(({ playerInfo, scoreData, total }) => (
+          <ScoreCell
+            key={playerInfo.id}
+            score={{
+              score: total.lowerBonus,
+              possibleScore: scoreData.yatzyBonusAvailable
+                ? total.lowerBonus + 100
+                : undefined,
+            }}
+            clickable={false}
+            onClick={() => undefined}
+          />
+        ))}
+      </div>
       <div className="scoreboard__row">
         <div>Total</div>
         <div></div>

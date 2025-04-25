@@ -15,13 +15,14 @@ import {
   mapDice,
   randomDice,
 } from "@/logic/utils";
-import { last, sortBy } from "lodash";
+import { last } from "lodash";
 import { GameOverResults } from "@/app/components/GameOverResults";
 
 function getEmptyScoreData(): PlayerScoreData {
   return {
     upperSection: {},
     lowerSection: {},
+    yatzyBonus: 0,
   };
 }
 
@@ -222,6 +223,11 @@ export const Board = () => {
                     ? "upperSection"
                     : "lowerSection";
 
+                  const scoreboard = scoreboardPlayers.find(
+                    (scoreboardPlayer) =>
+                      scoreboardPlayer.playerInfo.id === player.playerInfo.id,
+                  )!;
+
                   return {
                     ...player,
                     scoreData: {
@@ -230,6 +236,9 @@ export const Board = () => {
                         ...player.scoreData[section],
                         [categoryId]: updatedScore,
                       },
+                      yatzyBonus:
+                        player.scoreData.yatzyBonus +
+                        (scoreboard.scoreData.yatzyBonusAvailable ? 100 : 0),
                     },
                   };
                 }
