@@ -124,6 +124,7 @@ export const Board = ({ playerNames }: BoardProps) => {
     <Page>
       <div className="board">
         <div className="board__panel">
+          <h1>Yatzy</h1>
           {gameState.state === "game_over" ? (
             <>
               <GameOverResults scoreboardPlayers={scoreboardPlayers} />

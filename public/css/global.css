@@ -88,11 +88,11 @@ h1, h2, h3, h4, h5, h6 {
     gap: 4px;
 }
 
-.scoreboard__row__category_with_hint {
+.scoreboard__row__category_with-hint {
     justify-content: space-between;
 }
 
-.scoreboard__row__category_icon {
+.scoreboard__row__category-icon {
     margin: -1px 0 1px;
     font-size: 30px;
     line-height: 0;
@@ -141,14 +141,14 @@ h1, h2, h3, h4, h5, h6 {
     background: oklch(0.938 0.031 248.159);
 }
 
-.dice_board {
+.dice-board {
     display: flex;
     flex-direction: column;
     gap: 16px;
     padding: 20px 0;
 }
 
-.dice_board__roll_button_wrapper {
+.dice-board__roll-button-wrapper {
     display: flex;
     min-height: 24px;
     align-items: center;
@@ -156,7 +156,7 @@ h1, h2, h3, h4, h5, h6 {
     text-align: center;
 }
 
-.dice_board__dice_list {
+.dice-board__dice-list {
     display: flex;
     justify-content: center;
     gap: 10px;
@@ -164,19 +164,19 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0;
 }
 
-.dice_board__dice_list_item {
+.dice-board__dice-list-item {
     display: flex;
     gap: 8px;
     align-items: center;
 }
 
-.dice_board__section {
+.dice-board__section {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.dice_board__dice {
+.dice-board__dice {
     --hover-color: oklch(0.951 0.093 140.311);
 
     font-size: 64px;
@@ -192,28 +192,28 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
-.dice_board__dice_remove {
+.dice-board__dice_remove {
     --hover-color: oklch(0.921 0.04 17.903);
 }
 
-.dice_board__hint {
+.dice-board__hint {
     font-size: 14px;
     color: gray;
 }
 
-.new_game {
+.new-game {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-.new_game__players_wrapper {
+.new-game__players-wrapper {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.new_game__player_list {
+.new-game__player-list {
     margin: 0;
     padding: 0;
     display: flex;
@@ -222,7 +222,7 @@ h1, h2, h3, h4, h5, h6 {
     list-style: none;
 }
 
-.new_game__player {
+.new-game__player {
     display: flex;
     gap: 8px;
 }

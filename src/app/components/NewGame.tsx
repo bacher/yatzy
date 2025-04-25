@@ -32,7 +32,7 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
   return (
     <Page>
       <form
-        className="new_game"
+        className="new-game"
         onSubmit={(event) => {
           event.preventDefault();
 
@@ -45,10 +45,10 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
       >
         <h1>New Game</h1>
         <h2>Players</h2>
-        <div className="new_game__players_wrapper">
-          <ul className="new_game__player_list">
+        <div className="new-game__players-wrapper">
+          <ul className="new-game__player-list">
             {players.map((player, index) => (
-              <li key={player.name} className="new_game__player">
+              <li key={player.name} className="new-game__player">
                 <input
                   value={player.name}
                   onChange={(event) => {

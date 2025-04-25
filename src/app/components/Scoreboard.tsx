@@ -139,7 +139,7 @@ export const Scoreboard = ({
       {upperCategories.map((id) => (
         <div key={id} className="scoreboard__row">
           <div className="scoreboard__row__category">
-            <span className="scoreboard__row__category_icon">
+            <span className="scoreboard__row__category-icon">
               {diceSymbols[upperCategoryToDice[id]]}
             </span>{" "}
             {upperSectionTitles[id]}
@@ -175,7 +175,7 @@ export const Scoreboard = ({
         ))}
       </div>
       <div className="scoreboard__row">
-        <div className="scoreboard__row__category scoreboard__row__category_with_hint">
+        <div className="scoreboard__row__category scoreboard__row__category_with-hint">
           Bonus{" "}
           <span className="scoreboard__row__hint">
             If total score 63 or above
@@ -201,7 +201,7 @@ export const Scoreboard = ({
       </div>
       {lowerCategories.map((id) => (
         <div key={id} className="scoreboard__row">
-          <div className="scoreboard__row__category scoreboard__row__category_with_hint">
+          <div className="scoreboard__row__category scoreboard__row__category_with-hint">
             {lowerSectionTitles[id]}
             {lowerSectionHints[id] && (
               <>

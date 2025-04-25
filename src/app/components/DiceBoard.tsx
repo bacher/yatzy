@@ -35,17 +35,17 @@ export const DiceBoard = ({
   );
 
   return (
-    <div className="dice_board">
-      <div className="dice_board__section">
+    <div className="dice-board">
+      <div className="dice-board__section">
         {playDice.length > 0 ? (
           <>
-            <ul className="dice_board__dice_list">
+            <ul className="dice-board__dice-list">
               {playDice.map(({ dice, diceIndex }) => (
-                <li key={diceIndex} className="dice_board__dice_list_item">
+                <li key={diceIndex} className="dice-board__dice-list-item">
                   <button
                     type="button"
                     title="Keep dice"
-                    className="g-button-reset dice_board__dice"
+                    className="g-button-reset dice-board__dice"
                     onClick={() => {
                       onKeepToggle(diceIndex, true);
                     }}
@@ -55,31 +55,31 @@ export const DiceBoard = ({
                 </li>
               ))}
             </ul>
-            <div className="dice_board__roll_button_wrapper">
+            <div className="dice-board__roll-button-wrapper">
               {rollButton ?? (
-                <div className="dice_board__hint">
+                <div className="dice-board__hint">
                   You used your last reroll
                 </div>
               )}
             </div>
           </>
         ) : (
-          <div className="dice_board__hint">
+          <div className="dice-board__hint">
             You keep all dice, nothing to reroll.
           </div>
         )}
       </div>
 
-      <div className="dice_board__section">
+      <div className="dice-board__section">
         <h3>Keep</h3>
         {keepDice.length > 0 ? (
-          <ul className="dice_board__dice_list">
+          <ul className="dice-board__dice-list">
             {keepDice.map(({ dice, diceIndex }) => (
-              <li key={diceIndex} className="dice_board__dice_list_item">
+              <li key={diceIndex} className="dice-board__dice-list-item">
                 <button
                   type="button"
                   title="Unkeep dice"
-                  className="g-button-reset dice_board__dice dice_board__dice_remove"
+                  className="g-button-reset dice-board__dice dice-board__dice_remove"
                   onClick={() => {
                     onKeepToggle(diceIndex, false);
                   }}
@@ -90,7 +90,7 @@ export const DiceBoard = ({
             ))}
           </ul>
         ) : (
-          <div className="dice_board__hint">Click on dice to keep it</div>
+          <div className="dice-board__hint">Click on dice to keep it</div>
         )}
       </div>
     </div>
