@@ -14,8 +14,7 @@ import {
 import { diceToUpperCategory } from "@/logic/consts";
 
 export function randomDice(): Dice {
-  return 1;
-  // return (Math.floor(Math.random() * 6) + 1) as Dice;
+  return (Math.floor(Math.random() * 6) + 1) as Dice;
 }
 
 export function mapDice(

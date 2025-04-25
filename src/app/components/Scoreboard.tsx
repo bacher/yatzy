@@ -9,6 +9,7 @@ import {
 import classNames from "classnames";
 import { diceSymbols, upperCategoryToDice } from "@/logic/consts";
 import { lowerFirst } from "lodash";
+import { CSSProperties } from "react";
 
 const upperSectionTitles: Record<UpperCategory, string> = {
   ones: "Aces",
@@ -113,12 +114,26 @@ export const Scoreboard = ({
   onCategorySelect,
 }: ScoreboardProps) => {
   return (
-    <div className="scoreboard">
+    <div
+      className="scoreboard"
+      style={
+        {
+          "--players-count": players.length,
+        } as CSSProperties
+      }
+    >
       <div className="scoreboard__row scoreboard__row_title">
         <div>Upper section</div>
         <div>How to score</div>
         {players.map(({ playerInfo: { id, name } }) => (
-          <div key={id}>{name}</div>
+          <div
+            key={id}
+            className={classNames({
+              ["scoreboard__row__player-name_active"]: id === activePlayerId,
+            })}
+          >
+            {name}
+          </div>
         ))}
       </div>
       {upperCategories.map((id) => (

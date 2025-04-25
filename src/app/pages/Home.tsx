@@ -1,8 +1,8 @@
 import { RequestInfo } from "@redwoodjs/sdk/worker";
-import { Board } from "@/app/components/Board";
+import { Router } from "@/app/components/Router";
 
 export const Home = ({ ctx }: RequestInfo) => (
   <div>
-    <Board />
+    <Router />
   </div>
 );
