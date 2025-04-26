@@ -10,7 +10,12 @@ import { db, setupDb } from "./db";
 import type { User } from "@prisma/client";
 import { env } from "cloudflare:workers";
 import { Home } from "@/app/pages/Home";
+import { HostOnlineGame } from "@/app/pages/HostOnlineGame";
+import { realtimeRoute } from "@redwoodjs/sdk/realtime/worker";
+
 export { SessionDurableObject } from "./session/durableObject";
+export { RealtimeDurableObject } from "@redwoodjs/sdk/realtime/durableObject";
+export { NoteDurableObject } from "@/noteDurableObject";
 
 export type AppContext = {
   session: Session | null;
@@ -19,6 +24,7 @@ export type AppContext = {
 
 export default defineApp([
   setCommonHeaders(),
+  realtimeRoute(() => env.REALTIME_DURABLE_OBJECT),
   async ({ ctx, request, headers }) => {
     await setupDb(env);
     setupSessionStore(env);
@@ -49,6 +55,7 @@ export default defineApp([
   },
   render(Document, [
     route("/", [Home]),
+    route("/host/:roomId", [HostOnlineGame]),
     route("/ping", () => <h1>Pong!</h1>),
     route("/protected", [
       ({ ctx }) => {

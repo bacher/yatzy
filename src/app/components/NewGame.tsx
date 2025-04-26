@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Page } from "@/app/components/Page";
+import { link } from "@/app/shared/links";
 
 const PLAYER_NAMES_STORAGE_KEY = "yatzy_players";
 
@@ -21,6 +22,14 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
       },
     ];
   });
+
+  const [hostRoomId, setHostRoomId] = useState<string | undefined>();
+
+  useEffect(() => {
+    setHostRoomId(
+      Math.random().toString(36).substring(2, 14).padStart(10, "0"),
+    );
+  }, []);
 
   useEffect(() => {
     try {
@@ -48,6 +57,19 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
         }}
       >
         <h1>New Game</h1>
+        <div>
+          <a
+            href={
+              hostRoomId
+                ? link("/host/:roomId", {
+                    roomId: hostRoomId,
+                  })
+                : undefined
+            }
+          >
+            Host online game
+          </a>
+        </div>
         <h2>Players</h2>
         <div className="new-game__players-wrapper">
           <ul className="new-game__player-list">
