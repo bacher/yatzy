@@ -23,8 +23,8 @@
         "class_name": "RealtimeDurableObject"
       },
       {
-        "name": "NOTE_DURABLE_OBJECT",
-        "class_name": "NoteDurableObject"
+        "name": "ONLINE_GAME_DURABLE_OBJECT",
+        "class_name": "OnlineGameDurableObject"
       }
     ]
   },
@@ -37,6 +37,10 @@
       "new_sqlite_classes": [
         "SessionDurableObject"
       ]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": ["RealtimeDurableObject", "OnlineGameDurableObject"]
     }
   ],
   "d1_databases": [

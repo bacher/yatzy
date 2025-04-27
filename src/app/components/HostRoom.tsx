@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
 import { updateContent } from "@/app/pages/functions";
-// import { initRealtimeClient } from "@redwoodjs/sdk/realtime/client";
 
 type HostRoomProps = {
   roomId: string;

@@ -6,16 +6,29 @@ import { getContent } from "@/app/pages/functions";
 
 export const HostOnlineGame = async ({
   params,
+  request,
 }: RequestInfo<{ roomId: string }>) => {
-  const content = await getContent(params.roomId);
+  const roomId = params.roomId;
+  const secondRoomId = "34123";
+
+  const content = await getContent(roomId);
+  let content2;
+
+  const url = new URL(request.url);
+  if (url.searchParams.has("addroom")) {
+    content2 = await getContent(secondRoomId);
+  }
 
   return (
     <Page>
       <h1>Host Online Game</h1>
 
-      <div>ID: {params.roomId}</div>
+      <div>ID: {roomId}</div>
 
-      <HostRoom roomId={params.roomId} initialContent={content} />
+      <HostRoom roomId={roomId} initialContent={content} />
+      {content2 !== undefined && (
+        <HostRoom roomId={secondRoomId} initialContent={content2} />
+      )}
     </Page>
   );
 };

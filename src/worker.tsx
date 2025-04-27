@@ -15,7 +15,7 @@ import { realtimeRoute } from "@redwoodjs/sdk/realtime/worker";
 
 export { SessionDurableObject } from "./session/durableObject";
 export { RealtimeDurableObject } from "@redwoodjs/sdk/realtime/durableObject";
-export { NoteDurableObject } from "@/noteDurableObject";
+export { OnlineGameDurableObject } from "@/OnlineGameDurableObject";
 
 export type AppContext = {
   session: Session | null;
