@@ -1,0 +1,230 @@
+.page {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+.board {
+    display: flex;
+    gap: 16px;
+
+    & > :first-child {
+        flex-grow: 1;
+    }
+}
+
+.board__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px
+}
+
+.scoreboard {
+    display: grid;
+    /*noinspection CssUnresolvedCustomProperty*/
+    grid-template-columns: max-content 68px repeat(var(--players-count), minmax(100px, 1fr));
+    gap: 0 8px;
+}
+
+.scoreboard__row {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    min-height: 31px;
+    margin: 0 0 2px;
+    padding: 0 0 2px;
+    border-bottom: 1px solid #000;
+
+    @media (prefers-color-scheme: dark) {
+        border-bottom-color: rgb(255 255 255 / 0.87);
+    }
+
+    & > * {
+        align-self: center;
+    }
+
+    & > :not(:first-child) {
+        text-align: center;
+    }
+}
+
+.scoreboard__row__hint {
+    display: inline-block;
+    width: 62px;
+    font-size: 12px;
+    color: #808080;
+    text-wrap: balance;
+    text-align: center;
+    font-style: italic;
+
+    @media (prefers-color-scheme: dark) {
+        color: #a8a8a8;
+    }
+}
+
+.scoreboard__row__category {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.scoreboard__row__category_with-hint {
+    justify-content: space-between;
+}
+
+.scoreboard__row__category-icon {
+    margin: -3px 0 3px;
+    font-size: 30px;
+    line-height: 0;
+}
+
+.scoreboard__row__scoring {
+    font-size: 12px;
+}
+
+.scoreboard__row__score {
+    display: block;
+    align-self: stretch;
+    margin: 0 2px;
+    border-radius: 5px;
+}
+
+.scoreboard__row__score_temporary {
+    color: gray;
+}
+
+.scoreboard__row__score_clickable {
+    transition: background-color 0.2s;
+    cursor: pointer;
+
+    &:hover {
+        background: oklch(0.938 0.031 248.159);
+
+        @media (prefers-color-scheme: dark) {
+            background: oklch(0.372 0.012 212.592);
+        }
+    }
+}
+
+.scoreboard__row__score_clickable.scoreboard__row__score_empty {
+    &:hover::before {
+        content: '0';
+    }
+}
+
+.scoreboard__row_title {
+    font-weight: 700;
+
+    &:not(:first-child) {
+        margin: 6px 0 0;
+    }
+}
+
+.scoreboard__row__player-name_active {
+    border-radius: 5px;
+    background: oklch(0.938 0.031 248.159);
+
+    @media (prefers-color-scheme: dark) {
+        background: oklch(0.424 0.014 217.71);
+    }
+}
+
+.dice-board {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 0;
+}
+
+.dice-board__roll-button-wrapper {
+    display: flex;
+    min-height: 24px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.dice-board__dice-list {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+}
+
+.dice-board__dice-list-item {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.dice-board__section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dice-board__dice {
+    --hover-color: oklch(0.951 0.093 140.311);
+
+    @media (prefers-color-scheme: dark) {
+        --hover-color: oklch(0.372 0.012 212.592);
+    }
+
+    font-size: 64px;
+    line-height: 32px;
+    padding: 0 4px 14px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+
+    &:not(:disabled) {
+        &:hover {
+            background: var(--hover-color);
+        }
+    }
+}
+
+.dice-board__dice_remove {
+    --hover-color: oklch(0.921 0.04 17.903);
+
+    @media (prefers-color-scheme: dark) {
+        --hover-color: oklch(0.372 0.012 212.592);
+    }
+}
+
+.dice-board__hint {
+    font-size: 14px;
+    color: gray;
+}
+
+.new-game {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.new-game__players-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.new-game__player-list {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style: none;
+}
+
+.new-game__player {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.new-game__player__remove-button {
+    align-self: stretch;
+    padding: 0 0.8em;
+}

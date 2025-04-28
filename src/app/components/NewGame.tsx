@@ -91,11 +91,12 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
                 {index !== 0 && (
                   <button
                     type="button"
+                    className="new-game__player__remove-button"
                     onClick={() => {
                       setPlayers(players.filter((p) => p.name !== player.name));
                     }}
                   >
-                    remove
+                    Remove
                   </button>
                 )}
               </li>
@@ -118,7 +119,7 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
           </div>
         </div>
         <div>
-          <button>Start game</button>
+          <button data-primary>Start game</button>
         </div>
       </form>
     </Page>

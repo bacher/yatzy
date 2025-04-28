@@ -168,7 +168,11 @@ export const Board = ({ playerNames }: BoardProps) => {
                       keepIndexes={gameState.diceState.keepIndexes}
                       rollButton={
                         gameState.rollNumber <= 2 ? (
-                          <button type="button" onClick={onRollClick}>
+                          <button
+                            type="button"
+                            data-primary
+                            onClick={onRollClick}
+                          >
                             Reroll dice
                           </button>
                         ) : undefined
@@ -194,7 +198,7 @@ export const Board = ({ playerNames }: BoardProps) => {
               )}
               {gameState.diceState === undefined && (
                 <div>
-                  <button type="button" onClick={onRollClick}>
+                  <button type="button" data-primary onClick={onRollClick}>
                     Roll dice
                   </button>
                 </div>
