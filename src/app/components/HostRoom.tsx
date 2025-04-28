@@ -36,7 +36,7 @@ export const HostRoom = ({ roomId, initialContent }: HostRoomProps) => {
           const newValue = `HELLO_${Math.random()}`;
           console.log(`set content to ${newValue}`);
           updateContent(roomId, {
-            gameState: {
+            roomState: {
               a: (initialContent?.a ?? 0) + 1,
               b: newValue,
             },

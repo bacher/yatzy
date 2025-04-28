@@ -3,43 +3,21 @@
 import { useEffect, useState } from "react";
 import { Page } from "@/app/components/Page";
 import { link } from "@/app/shared/links";
-
-const PLAYER_NAMES_STORAGE_KEY = "yatzy_players";
-
-type NewGamePlayer = {
-  name: string;
-};
+import { generateId } from "@/app/utils/id";
+import { PlayerInfo } from "@/OnlineGameDurableObject";
+import { getLocalPlayers, saveLocalPlayers } from "@/app/utils/localStorage";
 
 type NewGameProps = {
   onStartGame: (playerNames: string[]) => void;
 };
 
 export const NewGame = ({ onStartGame }: NewGameProps) => {
-  const [players, setPlayers] = useState<NewGamePlayer[]>(() => {
-    return [
-      {
-        name: "Player 1",
-      },
-    ];
-  });
-
+  const [players, setPlayers] = useState<PlayerInfo[]>([]);
   const [hostRoomId, setHostRoomId] = useState<string | undefined>();
 
   useEffect(() => {
-    setHostRoomId(
-      Math.random().toString(36).substring(2, 14).padStart(10, "0"),
-    );
-  }, []);
-
-  useEffect(() => {
-    try {
-      const playersJson = localStorage.getItem(PLAYER_NAMES_STORAGE_KEY);
-      if (playersJson) {
-        setPlayers(JSON.parse(playersJson));
-      }
-    } catch (error) {
-      console.warn(error);
-    }
+    setHostRoomId(generateId());
+    setPlayers(getLocalPlayers());
   }, []);
 
   return (
@@ -53,10 +31,7 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
             onSubmit={(event) => {
               event.preventDefault();
 
-              localStorage.setItem(
-                PLAYER_NAMES_STORAGE_KEY,
-                JSON.stringify(players),
-              );
+              saveLocalPlayers(players);
               onStartGame(players.map(({ name }) => name));
             }}
           >
@@ -64,13 +39,13 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
             <div className="new-game__players-wrapper">
               <ul className="new-game__player-list">
                 {players.map((player, index) => (
-                  <li key={player.name} className="new-game__player">
+                  <li key={player.id} className="new-game__player">
                     <input
                       value={player.name}
                       onChange={(event) => {
                         setPlayers(
                           players.map((p) =>
-                            p.name === player.name
+                            p.id === player.id
                               ? { ...p, name: event.target.value }
                               : p,
                           ),
@@ -102,6 +77,7 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
                     setPlayers([
                       ...players,
                       {
+                        id: generateId(),
                         name: `Player ${players.length + 1}`,
                       },
                     ]);

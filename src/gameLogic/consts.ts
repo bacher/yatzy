@@ -1,4 +1,4 @@
-import { Dice, UpperCategory } from "@/logic/types";
+import { Dice, UpperCategory } from "@/gameLogic/types";
 
 export const diceSymbols = {
   1: "⚀",

@@ -10,7 +10,7 @@ import { db, setupDb } from "./db";
 import type { User } from "@prisma/client";
 import { env } from "cloudflare:workers";
 import { Home } from "@/app/pages/Home";
-import { HostOnlineGame } from "@/app/pages/HostOnlineGame";
+import { HostOnlineGame } from "@/app/pages/online/HostOnlineGame";
 import { realtimeRoute } from "@redwoodjs/sdk/realtime/worker";
 
 export { SessionDurableObject } from "./session/durableObject";

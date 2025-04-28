@@ -1,5 +1,5 @@
-import { DiceState } from "@/logic/types";
-import { diceSymbols } from "@/logic/consts";
+import { DiceState } from "@/gameLogic/types";
+import { diceSymbols } from "@/gameLogic/consts";
 import { sortBy } from "lodash";
 import { ReactNode, useMemo } from "react";
 

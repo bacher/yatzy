@@ -5,9 +5,9 @@ import {
   TotalScore,
   upperCategories,
   UpperCategory,
-} from "@/logic/types";
+} from "@/gameLogic/types";
 import classNames from "classnames";
-import { diceSymbols, upperCategoryToDice } from "@/logic/consts";
+import { diceSymbols, upperCategoryToDice } from "@/gameLogic/consts";
 import { lowerFirst } from "lodash";
 import { CSSProperties } from "react";
 

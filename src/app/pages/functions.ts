@@ -2,22 +2,22 @@
 
 import { env } from "cloudflare:workers";
 
-import type {
-  OnlineGameState,
-  OnlineGameStateWrapper,
-} from "@/OnlineGameDurableObject";
+import type { OnlineGameState, PlayerInfo } from "@/OnlineGameDurableObject";
 
 export const getContent = async (key: string) => {
   const doId = env.ONLINE_GAME_DURABLE_OBJECT.idFromName(key);
-  const noteDO = env.ONLINE_GAME_DURABLE_OBJECT.get(doId);
-  return noteDO.getContent();
+  const roomDo = env.ONLINE_GAME_DURABLE_OBJECT.get(doId);
+  return roomDo.getContent();
 };
 
-export const updateContent = async (
-  key: string,
-  content: OnlineGameStateWrapper,
-) => {
+export const updateContent = async (key: string, content: OnlineGameState) => {
   const doId = env.ONLINE_GAME_DURABLE_OBJECT.idFromName(key);
-  const noteDO = env.ONLINE_GAME_DURABLE_OBJECT.get(doId);
-  await noteDO.setContent(content);
+  const roomDo = env.ONLINE_GAME_DURABLE_OBJECT.get(doId);
+  await roomDo.setContent(content);
+};
+
+export const addPlayerIntoRoom = async (key: string, player: PlayerInfo) => {
+  const doId = env.ONLINE_GAME_DURABLE_OBJECT.idFromName(key);
+  const roomDo = env.ONLINE_GAME_DURABLE_OBJECT.get(doId);
+  await roomDo.addPlayerIntoRoom(player);
 };

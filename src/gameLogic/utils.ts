@@ -6,12 +6,12 @@ import {
   DiceState,
   PlayerScoreData,
   TotalScore,
-} from "@/logic/types";
+} from "@/gameLogic/types";
 import {
   ScoreboardCategoryScore,
   ScoreboardScoreData,
 } from "@/app/components/Scoreboard";
-import { diceToUpperCategory } from "@/logic/consts";
+import { diceToUpperCategory } from "@/gameLogic/consts";
 
 export function randomDice(): Dice {
   return (Math.floor(Math.random() * 6) + 1) as Dice;

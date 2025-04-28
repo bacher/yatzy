@@ -7,14 +7,14 @@ import {
   isUpperCategory,
   Player,
   PlayerScoreData,
-} from "@/logic/types";
+} from "@/gameLogic/types";
 import { DiceBoard } from "@/app/components/DiceBoard";
 import {
   addTemporaryScore,
   getTotalScore,
   mapDice,
   randomDice,
-} from "@/logic/utils";
+} from "@/gameLogic/utils";
 import { last } from "lodash";
 import { GameOverResults } from "@/app/components/GameOverResults";
 import { Page } from "@/app/components/Page";
