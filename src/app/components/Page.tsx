@@ -1,5 +1,10 @@
 import type { ReactNode } from "react";
+import classNames from "classnames";
 
-export const Page = ({ children }: { children: ReactNode }) => (
-  <main className="page">{children}</main>
-);
+export const Page = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) => <main className={classNames("page", className)}>{children}</main>;

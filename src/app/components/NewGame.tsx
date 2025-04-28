@@ -43,21 +43,81 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
   }, []);
 
   return (
-    <Page>
-      <form
-        className="new-game"
-        onSubmit={(event) => {
-          event.preventDefault();
+    <Page className="new-game">
+      <h1>New Game</h1>
+      <div className="new-game__panels">
+        <div className="new-game__panel">
+          <h2 className="new-game__panel-header">Local game</h2>
+          <form
+            className="new-game__form"
+            onSubmit={(event) => {
+              event.preventDefault();
 
-          localStorage.setItem(
-            PLAYER_NAMES_STORAGE_KEY,
-            JSON.stringify(players),
-          );
-          onStartGame(players.map(({ name }) => name));
-        }}
-      >
-        <h1>New Game</h1>
-        <div>
+              localStorage.setItem(
+                PLAYER_NAMES_STORAGE_KEY,
+                JSON.stringify(players),
+              );
+              onStartGame(players.map(({ name }) => name));
+            }}
+          >
+            <h3>Player list</h3>
+            <div className="new-game__players-wrapper">
+              <ul className="new-game__player-list">
+                {players.map((player, index) => (
+                  <li key={player.name} className="new-game__player">
+                    <input
+                      value={player.name}
+                      onChange={(event) => {
+                        setPlayers(
+                          players.map((p) =>
+                            p.name === player.name
+                              ? { ...p, name: event.target.value }
+                              : p,
+                          ),
+                        );
+                      }}
+                    />
+
+                    {index !== 0 && (
+                      <button
+                        type="button"
+                        className="new-game__player__remove-button"
+                        onClick={() => {
+                          setPlayers(
+                            players.filter((p) => p.name !== player.name),
+                          );
+                        }}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              <div>
+                <button
+                  type="button"
+                  data-small
+                  onClick={() => {
+                    setPlayers([
+                      ...players,
+                      {
+                        name: `Player ${players.length + 1}`,
+                      },
+                    ]);
+                  }}
+                >
+                  Add more
+                </button>
+              </div>
+            </div>
+            <div>
+              <button data-primary>Start game</button>
+            </div>
+          </form>
+        </div>
+        <div className="new-game__panel">
+          <h2 className="new-game__panel-header">Play with friends online</h2>
           <a
             href={
               hostRoomId
@@ -70,58 +130,7 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
             Host online game
           </a>
         </div>
-        <h2>Players</h2>
-        <div className="new-game__players-wrapper">
-          <ul className="new-game__player-list">
-            {players.map((player, index) => (
-              <li key={player.name} className="new-game__player">
-                <input
-                  value={player.name}
-                  onChange={(event) => {
-                    setPlayers(
-                      players.map((p) =>
-                        p.name === player.name
-                          ? { ...p, name: event.target.value }
-                          : p,
-                      ),
-                    );
-                  }}
-                />
-
-                {index !== 0 && (
-                  <button
-                    type="button"
-                    className="new-game__player__remove-button"
-                    onClick={() => {
-                      setPlayers(players.filter((p) => p.name !== player.name));
-                    }}
-                  >
-                    Remove
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
-          <div>
-            <button
-              type="button"
-              onClick={() => {
-                setPlayers([
-                  ...players,
-                  {
-                    name: `Player ${players.length + 1}`,
-                  },
-                ]);
-              }}
-            >
-              Add more
-            </button>
-          </div>
-        </div>
-        <div>
-          <button data-primary>Start game</button>
-        </div>
-      </form>
+      </div>
     </Page>
   );
 };

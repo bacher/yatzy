@@ -203,6 +203,29 @@
     gap: 16px;
 }
 
+.new-game__panels {
+    display: flex;
+    gap: 32px;
+}
+
+.new-game__panel {
+    flex-basis: 100px;
+    flex-grow: 1;
+    padding: 20px 24px;
+    border-radius: 16px;
+    background: #333;
+}
+
+.new-game__panel-header {
+    margin: 0 0 16px;
+}
+
+.new-game__form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
 .new-game__players-wrapper {
     display: flex;
     flex-direction: column;
