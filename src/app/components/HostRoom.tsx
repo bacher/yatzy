@@ -1,10 +1,11 @@
 "use client";
 
 import { updateContent } from "@/app/pages/functions";
+import { OnlineGameState } from "@/OnlineGameDurableObject";
 
 type HostRoomProps = {
   roomId: string;
-  initialContent: string;
+  initialContent: OnlineGameState;
 };
 
 export const HostRoom = ({ roomId, initialContent }: HostRoomProps) => {
@@ -26,13 +27,20 @@ export const HostRoom = ({ roomId, initialContent }: HostRoomProps) => {
   return (
     <div>
       <h1>Host room {roomId}</h1>
-      <pre>[{initialContent}]</pre>
+      <pre>
+        a: {initialContent.a}, b: {initialContent.b}
+      </pre>
       <button
         type="button"
         onClick={() => {
           const newValue = `HELLO_${Math.random()}`;
           console.log(`set content to ${newValue}`);
-          updateContent(roomId, newValue).then(
+          updateContent(roomId, {
+            gameState: {
+              a: (initialContent?.a ?? 0) + 1,
+              b: newValue,
+            },
+          }).then(
             () => console.log("content updated"),
             (error) => console.error(error),
           );
