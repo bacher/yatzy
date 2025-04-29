@@ -3,7 +3,8 @@
 import { Scoreboard, ScoreboardPlayer } from "@/app/components/Scoreboard";
 import { useMemo, useState } from "react";
 import {
-  DiceState,
+  GameStartState,
+  GameState,
   isUpperCategory,
   Player,
   PlayerScoreData,
@@ -26,22 +27,6 @@ function getEmptyScoreData(): PlayerScoreData {
     yatzyBonus: 0,
   };
 }
-
-type GamePlayState = {
-  state: "game_start";
-  currentPlayerId: string;
-  turn: number;
-  diceState: DiceState | undefined;
-  rollNumber: number;
-};
-
-type GameOverState = {
-  state: "game_over";
-};
-
-type GameState = GamePlayState | GameOverState;
-
-type GameStateType = GameState["state"];
 
 type BoardProps = {
   playerNames: string[];
@@ -97,7 +82,7 @@ export const Board = ({ playerNames }: BoardProps) => {
       return;
     }
 
-    const updatedState: GamePlayState = { ...gameState };
+    const updatedState: GameStartState = { ...gameState };
 
     if (
       updatedState.diceState &&
@@ -250,7 +235,7 @@ export const Board = ({ playerNames }: BoardProps) => {
                 }),
               );
 
-              const updatedGameState: GamePlayState = { ...gameState };
+              const updatedGameState: GameStartState = { ...gameState };
 
               if (gameState.currentPlayerId === last(players)!.playerInfo.id) {
                 if (gameState.turn === 12) {

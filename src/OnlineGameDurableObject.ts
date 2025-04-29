@@ -1,5 +1,6 @@
 import { DurableObject } from "cloudflare:workers";
-import { updateContent } from "@/app/pages/functions";
+
+import type { GameState } from "@/gameLogic/types";
 
 export type PlayerInfo = {
   id: string;
@@ -14,6 +15,7 @@ export type OnlineGameState =
   | {
       roomState: "game";
       players: PlayerInfo[];
+      gameState: GameState;
     };
 
 export class OnlineGameDurableObject extends DurableObject {
@@ -67,5 +69,29 @@ export class OnlineGameDurableObject extends DurableObject {
 
     content.players.push(playerInfo);
     await this.setContent(content);
+  }
+
+  async startGame() {
+    const content = await this.getContent();
+
+    if (content.roomState !== "lobby") {
+      throw new Error("Room is not in lobby state");
+    }
+
+    if (content.players.length === 0) {
+      throw new Error("Room is empty");
+    }
+
+    await this.setContent({
+      roomState: "game",
+      players: content.players,
+      gameState: {
+        state: "game_start",
+        currentPlayerId: content.players[0].id,
+        turn: 0,
+        diceState: undefined,
+        rollNumber: 0,
+      },
+    });
   }
 }

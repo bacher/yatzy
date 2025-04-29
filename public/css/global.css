@@ -37,6 +37,12 @@ h2 {
     letter-spacing: 0.3px;
 }
 
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
 a {
     font-weight: 500;
     color: #646cff;

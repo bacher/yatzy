@@ -233,12 +233,9 @@
 }
 
 .new-game__player-list {
-    margin: 0;
-    padding: 0;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    list-style: none;
 }
 
 .new-game__player {
@@ -250,4 +247,16 @@
 .new-game__player__remove-button {
     align-self: stretch;
     padding: 0 0.8em;
+}
+
+.host-online-game {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.lobby__players-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }

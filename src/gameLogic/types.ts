@@ -62,3 +62,17 @@ export type TotalScore = {
   lowerTotal: number;
   grandTotal: number;
 };
+
+export type GameStartState = {
+  state: "game_start";
+  currentPlayerId: string;
+  turn: number;
+  diceState: DiceState | undefined;
+  rollNumber: number;
+};
+
+export type GameOverState = {
+  state: "game_over";
+};
+
+export type GameState = GameStartState | GameOverState;
