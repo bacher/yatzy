@@ -19,6 +19,7 @@ import {
 import { last } from "lodash";
 import { GameOverResults } from "@/app/components/GameOverResults";
 import { Page } from "@/app/components/Page";
+import { PlayerInfo } from "@/OnlineGameDurableObject";
 
 function getEmptyScoreData(): PlayerScoreData {
   return {
@@ -29,30 +30,40 @@ function getEmptyScoreData(): PlayerScoreData {
 }
 
 type BoardProps = {
-  playerNames: string[];
+  players: PlayerInfo[];
 };
 
-export const Board = ({ playerNames }: BoardProps) => {
-  const [players, setPlayers] = useState<Player[]>(() =>
-    playerNames.map((playerName, index) => ({
-      playerInfo: {
-        id: `id:${index}`,
-        name: playerName,
-      },
-      scoreData: getEmptyScoreData(),
-    })),
-  );
+function generateEmptyScoreForPlayers(
+  players: PlayerInfo[],
+): Record<string, PlayerScoreData> {
+  const results = {} as Record<string, PlayerScoreData>;
+  for (const { id } of players) {
+    results[id] = getEmptyScoreData();
+  }
+  return results;
+}
 
-  const [gameState, setGameState] = useState<GameState>(() => ({
+function getEmptyGameState(players: PlayerInfo[]): GameState {
+  return {
     state: "game_start",
-    currentPlayerId: players[0].playerInfo.id,
+    currentPlayerId: players[0].id,
     turn: 0,
     rollNumber: 0,
     diceState: undefined,
-  }));
+  };
+}
 
-  const getPlayerById = (id: string): Player => {
-    const player = players.find(({ playerInfo }) => playerInfo.id === id);
+export const Board = ({ players }: BoardProps) => {
+  const [score, setScore] = useState(() =>
+    generateEmptyScoreForPlayers(players),
+  );
+
+  const [gameState, setGameState] = useState<GameState>(() =>
+    getEmptyGameState(players),
+  );
+
+  const getPlayerById = (playerId: string): PlayerInfo => {
+    const player = players.find(({ id }) => id === playerId);
 
     if (!player) {
       throw new Error("Invalid player id");
@@ -63,18 +74,18 @@ export const Board = ({ playerNames }: BoardProps) => {
 
   const scoreboardPlayers = useMemo<ScoreboardPlayer[]>(
     () =>
-      players.map((player) => ({
-        ...player,
+      players.map((playerInfo) => ({
+        playerInfo: playerInfo,
         scoreData: addTemporaryScore(
-          player.scoreData,
+          score[playerInfo.id],
           gameState.state === "game_start" &&
-            gameState.currentPlayerId === player.playerInfo.id
+            gameState.currentPlayerId === playerInfo.id
             ? gameState.diceState
             : undefined,
         ),
-        total: getTotalScore(player.scoreData),
+        total: getTotalScore(score[playerInfo.id]),
       })),
-    [players, gameState],
+    [score, gameState],
   );
 
   const onRollClick = () => {
@@ -117,19 +128,8 @@ export const Board = ({ playerNames }: BoardProps) => {
                 <button
                   type="button"
                   onClick={() => {
-                    setPlayers(
-                      players.map((player) => ({
-                        ...player,
-                        scoreData: getEmptyScoreData(),
-                      })),
-                    );
-                    setGameState({
-                      state: "game_start",
-                      currentPlayerId: players[0].playerInfo.id,
-                      turn: 0,
-                      rollNumber: 0,
-                      diceState: undefined,
-                    });
+                    setScore(generateEmptyScoreForPlayers(players));
+                    setGameState(getEmptyGameState(players));
                   }}
                 >
                   Start new game
@@ -140,8 +140,7 @@ export const Board = ({ playerNames }: BoardProps) => {
             <>
               <h2>Turn: {gameState.turn + 1} of 13</h2>
               <h2>
-                Current player:{" "}
-                {getPlayerById(gameState.currentPlayerId).playerInfo.name}
+                Current player: {getPlayerById(gameState.currentPlayerId).name}
               </h2>
               {gameState.diceState ? (
                 (() => {
@@ -205,39 +204,37 @@ export const Board = ({ playerNames }: BoardProps) => {
                 throw new Error("Invalid state");
               }
 
-              setPlayers((players) =>
-                players.map((player) => {
-                  if (player.playerInfo.id === gameState.currentPlayerId) {
-                    const section = isUpperCategory(categoryId)
-                      ? "upperSection"
-                      : "lowerSection";
+              setScore((score) => {
+                const section = isUpperCategory(categoryId)
+                  ? "upperSection"
+                  : "lowerSection";
 
-                    const scoreboard = scoreboardPlayers.find(
-                      (scoreboardPlayer) =>
-                        scoreboardPlayer.playerInfo.id === player.playerInfo.id,
-                    )!;
+                const scoreboard = scoreboardPlayers.find(
+                  (scoreboardPlayer) =>
+                    scoreboardPlayer.playerInfo.id ===
+                    gameState.currentPlayerId,
+                )!;
 
-                    return {
-                      ...player,
-                      scoreData: {
-                        ...player.scoreData,
-                        [section]: {
-                          ...player.scoreData[section],
-                          [categoryId]: updatedScore,
-                        },
-                        yatzyBonus:
-                          player.scoreData.yatzyBonus +
-                          (scoreboard.scoreData.yatzyBonusAvailable ? 100 : 0),
-                      },
-                    };
-                  }
-                  return player;
-                }),
-              );
+                const currentScore = score[gameState.currentPlayerId];
+
+                return {
+                  ...score,
+                  [gameState.currentPlayerId]: {
+                    ...currentScore,
+                    [section]: {
+                      ...currentScore[section],
+                      [categoryId]: updatedScore,
+                    },
+                    yatzyBonus:
+                      currentScore.yatzyBonus +
+                      (scoreboard.scoreData.yatzyBonusAvailable ? 100 : 0),
+                  },
+                };
+              });
 
               const updatedGameState: GameStartState = { ...gameState };
 
-              if (gameState.currentPlayerId === last(players)!.playerInfo.id) {
+              if (gameState.currentPlayerId === last(players)!.id) {
                 if (gameState.turn === 12) {
                   setGameState({
                     state: "game_over",
@@ -245,13 +242,13 @@ export const Board = ({ playerNames }: BoardProps) => {
                   return;
                 }
                 updatedGameState.turn += 1;
-                updatedGameState.currentPlayerId = players[0].playerInfo.id;
+                updatedGameState.currentPlayerId = players[0].id;
               } else {
+                const currentPlayerIndex = players.findIndex(
+                  (player) => player.id === gameState.currentPlayerId,
+                );
                 updatedGameState.currentPlayerId =
-                  players[
-                    players.indexOf(getPlayerById(gameState.currentPlayerId)) +
-                      1
-                  ].playerInfo.id;
+                  players[currentPlayerIndex + 1].id;
               }
 
               updatedGameState.rollNumber = 0;

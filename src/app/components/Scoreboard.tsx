@@ -2,6 +2,7 @@ import {
   lowerCategories,
   LowerCategory,
   Player,
+  PlayerInfo,
   TotalScore,
   upperCategories,
   UpperCategory,
@@ -57,7 +58,8 @@ export type ScoreboardScoreData = {
   yatzyBonusAvailable: boolean;
 };
 
-export type ScoreboardPlayer = Omit<Player, "scoreData"> & {
+export type ScoreboardPlayer = {
+  playerInfo: PlayerInfo;
   scoreData: ScoreboardScoreData;
   total: TotalScore;
 };

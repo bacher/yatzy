@@ -8,7 +8,7 @@ import { PlayerInfo } from "@/OnlineGameDurableObject";
 import { getLocalPlayers, saveLocalPlayers } from "@/app/utils/localStorage";
 
 type NewGameProps = {
-  onStartGame: (playerNames: string[]) => void;
+  onStartGame: (players: PlayerInfo[]) => void;
 };
 
 export const NewGame = ({ onStartGame }: NewGameProps) => {
@@ -32,7 +32,7 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
               event.preventDefault();
 
               saveLocalPlayers(players);
-              onStartGame(players.map(({ name }) => name));
+              onStartGame(players);
             }}
           >
             <h3>Player list</h3>
