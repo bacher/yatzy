@@ -16,8 +16,6 @@ export const HostOnlineGame = async ({
 
   return (
     <Page className="host-online-game">
-      <h1>Host Online Game</h1>
-
       {roomInfo.roomState === "lobby" ? (
         <Lobby roomId={roomId} roomInfo={{ ...roomInfo }} />
       ) : (

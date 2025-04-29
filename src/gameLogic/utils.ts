@@ -4,14 +4,17 @@ import {
   Dice,
   diceOrdered,
   DiceState,
+  GameState,
   PlayerScoreData,
   TotalScore,
 } from "@/gameLogic/types";
 import {
   ScoreboardCategoryScore,
+  ScoreboardPlayer,
   ScoreboardScoreData,
 } from "@/app/components/Scoreboard";
 import { diceToUpperCategory } from "@/gameLogic/consts";
+import { PlayerInfo } from "@/OnlineGameDurableObject";
 
 export function randomDice(): Dice {
   return (Math.floor(Math.random() * 6) + 1) as Dice;
@@ -197,4 +200,44 @@ export function getTotalScore(scoreData: PlayerScoreData): TotalScore {
     lowerTotal: lowerSectionTotal,
     grandTotal: upper + lowerSectionTotal,
   };
+}
+
+export function calculateScoreboard({
+  players,
+  gameState,
+  score,
+}: {
+  players: PlayerInfo[];
+  score: Record<string, PlayerScoreData>;
+  gameState: GameState;
+}): ScoreboardPlayer[] {
+  return players.map((playerInfo) => ({
+    playerInfo: playerInfo,
+    scoreData: addTemporaryScore(
+      score[playerInfo.id],
+      gameState.state === "game_start" &&
+        gameState.currentPlayerId === playerInfo.id
+        ? gameState.diceState
+        : undefined,
+    ),
+    total: getTotalScore(score[playerInfo.id]),
+  }));
+}
+
+export function getEmptyScoreData(): PlayerScoreData {
+  return {
+    upperSection: {},
+    lowerSection: {},
+    yatzyBonus: 0,
+  };
+}
+
+export function getEmptyScoreForPlayers(
+  players: PlayerInfo[],
+): Record<string, PlayerScoreData> {
+  const results = {} as Record<string, PlayerScoreData>;
+  for (const { id } of players) {
+    results[id] = getEmptyScoreData();
+  }
+  return results;
 }

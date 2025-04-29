@@ -213,7 +213,11 @@
     flex-grow: 1;
     padding: 20px 24px;
     border-radius: 16px;
-    background: #333;
+    background: #eee;
+
+    @media (prefers-color-scheme: dark) {
+        background: #333;
+    }
 }
 
 .new-game__panel-header {

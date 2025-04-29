@@ -9,36 +9,18 @@ import {
   GameState,
   isUpperCategory,
   LowerCategory,
-  PlayerScoreData,
   UpperCategory,
 } from "@/gameLogic/types";
 import {
-  addTemporaryScore,
-  getTotalScore,
+  calculateScoreboard,
+  getEmptyScoreForPlayers,
   mapDice,
   randomDice,
 } from "@/gameLogic/utils";
 
 import { Board } from "@/app/components/Board";
 import { ScoreboardPlayer } from "@/app/components/Scoreboard";
-
-function getEmptyScoreData(): PlayerScoreData {
-  return {
-    upperSection: {},
-    lowerSection: {},
-    yatzyBonus: 0,
-  };
-}
-
-function getEmptyScoreForPlayers(
-  players: PlayerInfo[],
-): Record<string, PlayerScoreData> {
-  const results = {} as Record<string, PlayerScoreData>;
-  for (const { id } of players) {
-    results[id] = getEmptyScoreData();
-  }
-  return results;
-}
+import { Page } from "@/app/components/Page";
 
 function getEmptyGameState(players: PlayerInfo[]): GameState {
   return {
@@ -62,19 +44,8 @@ export const LocalGame = ({ players }: LocalGameProps) => {
   const [score, setScore] = useState(() => getEmptyScoreForPlayers(players));
 
   const scoreboard = useMemo<ScoreboardPlayer[]>(
-    () =>
-      players.map((playerInfo) => ({
-        playerInfo: playerInfo,
-        scoreData: addTemporaryScore(
-          score[playerInfo.id],
-          gameState.state === "game_start" &&
-            gameState.currentPlayerId === playerInfo.id
-            ? gameState.diceState
-            : undefined,
-        ),
-        total: getTotalScore(score[playerInfo.id]),
-      })),
-    [score, gameState],
+    () => calculateScoreboard({ players, gameState, score }),
+    [score, gameState, score],
   );
 
   const onRollClick = () => {
@@ -192,14 +163,16 @@ export const LocalGame = ({ players }: LocalGameProps) => {
   };
 
   return (
-    <Board
-      players={players}
-      gameState={gameState}
-      scoreboard={scoreboard}
-      onRollClick={onRollClick}
-      onKeepToggle={onKeepToggle}
-      onCategorySelect={onCategorySelect}
-      onRestartClick={onRestartClick}
-    />
+    <Page>
+      <Board
+        players={players}
+        gameState={gameState}
+        scoreboard={scoreboard}
+        onRollClick={onRollClick}
+        onKeepToggle={onKeepToggle}
+        onCategorySelect={onCategorySelect}
+        onRestartClick={onRestartClick}
+      />
+    </Page>
   );
 };

@@ -44,6 +44,7 @@ export const Lobby = ({ roomId, roomInfo }: LobbyProps) => {
 
   return (
     <>
+      <h1>Host Online Game</h1>
       <h2>Room ID: {roomId}</h2>
       <ShareRoomLinkText />
       <h3>Players:</h3>
