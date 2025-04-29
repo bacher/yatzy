@@ -56,9 +56,13 @@ export const Board = ({
           <>
             <GameOverResults scoreboardPlayers={scoreboard} />
             <div>
-              <button type="button" onClick={onRestartClick}>
-                Start new game
-              </button>
+              {localPlayerIds.includes(players[0].id) ? (
+                <button type="button" onClick={onRestartClick}>
+                  Start new game
+                </button>
+              ) : (
+                <span>Waiting for host</span>
+              )}
             </div>
           </>
         ) : (
