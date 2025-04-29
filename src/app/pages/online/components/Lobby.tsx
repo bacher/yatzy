@@ -24,10 +24,18 @@ export const Lobby = ({ roomId, roomInfo }: LobbyProps) => {
   }, []);
 
   useEffect(() => {
+    let timeoutId: number | undefined;
+
     if (me && roomInfo.players.every(({ id }) => id !== me.id)) {
-      console.log("call addPlayerIntoRoom");
-      addPlayerIntoRoom(roomId, me).catch((error) => console.error(error));
+      timeoutId = window.setTimeout(() => {
+        addPlayerIntoRoom(roomId, me).catch((error) => console.error(error));
+      }, 500);
     }
+    return () => {
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+    };
   }, [roomInfo.players, me]);
 
   const addPlayerIntoRoomDebounced = useMemo(
