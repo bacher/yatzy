@@ -209,6 +209,19 @@
     }
 }
 
+.dice-board__dice_animate {
+    animation: roll 0.35s ease-out;
+}
+
+@keyframes roll {
+    from {
+        transform: scale(0) rotate(-1.5turn);
+    }
+    to {
+        transform: scale(1) rotate(0);
+    }
+}
+
 .dice-board__dice_remove {
     --hover-color: oklch(0.921 0.04 17.903);
 

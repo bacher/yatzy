@@ -1,7 +1,7 @@
 import { DiceState } from "@/gameLogic/types";
 import { diceSymbols } from "@/gameLogic/consts";
 import { partition, sortBy } from "lodash";
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useMemo, useRef } from "react";
 import classNames from "classnames";
 
 type DiceBoardProps = DiceState & {
@@ -19,6 +19,14 @@ export const DiceBoard = ({
   rollButton,
   onKeepToggle,
 }: DiceBoardProps) => {
+  const rollIndexRef = useRef(0);
+
+  const previousDiceSet = useRef(diceSet);
+  if (previousDiceSet.current !== diceSet) {
+    rollIndexRef.current += 1;
+    previousDiceSet.current = diceSet;
+  }
+
   const diceList = useMemo(
     () =>
       sortBy(
@@ -43,7 +51,7 @@ export const DiceBoard = ({
         {diceList.length > 0 ? (
           <>
             <ul className="dice-board__dice-list">
-              {diceList.map(({ dice, diceIndex, keep }, visualIndex) => (
+              {diceList.map(({ dice, diceIndex, keep }) => (
                 <li
                   key={diceIndex}
                   className="dice-board__dice-list-item"
@@ -58,6 +66,7 @@ export const DiceBoard = ({
                   }
                 >
                   <button
+                    key={keep ? "keep" : rollIndexRef.current}
                     type="button"
                     title={keep ? "Unkeep dice" : "Keep dice"}
                     className={classNames(
@@ -65,6 +74,7 @@ export const DiceBoard = ({
                       "dice-board__dice",
                       {
                         ["dice-board__dice_remove"]: keep,
+                        ["dice-board__dice_animate"]: !keep,
                       },
                     )}
                     disabled={!isPlayerTurn}
