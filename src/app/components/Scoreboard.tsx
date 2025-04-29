@@ -1,18 +1,19 @@
 import {
+  CategoryId,
   lowerCategories,
-  LowerCategory,
+  LowerCategoryId,
   Player,
   PlayerInfo,
   TotalScore,
   upperCategories,
-  UpperCategory,
+  UpperCategoryId,
 } from "@/gameLogic/types";
 import classNames from "classnames";
 import { diceSymbols, upperCategoryToDice } from "@/gameLogic/consts";
 import { lowerFirst } from "lodash";
 import { CSSProperties } from "react";
 
-const upperSectionTitles: Record<UpperCategory, string> = {
+const upperSectionTitles: Record<UpperCategoryId, string> = {
   ones: "Aces",
   twos: "Twos",
   threes: "Threes",
@@ -21,7 +22,7 @@ const upperSectionTitles: Record<UpperCategory, string> = {
   sixes: "Sixes",
 };
 
-const lowerSectionTitles: Record<LowerCategory, string> = {
+const lowerSectionTitles: Record<LowerCategoryId, string> = {
   kind_3: "3 of a kind",
   kind_4: "4 of a kind",
   full_house: "Full house",
@@ -31,13 +32,13 @@ const lowerSectionTitles: Record<LowerCategory, string> = {
   yatzy: "Yatzy",
 };
 
-const lowerSectionHints: Partial<Record<LowerCategory, string>> = {
+const lowerSectionHints: Partial<Record<LowerCategoryId, string>> = {
   small_straight: "Sequence of 4",
   large_straight: "Sequence of 5",
   yatzy: "5 of a kind",
 };
 
-const lowerSectionScoring: Record<LowerCategory, string> = {
+const lowerSectionScoring: Record<LowerCategoryId, string> = {
   kind_3: "Add total of all dice",
   kind_4: "Add total of all dice",
   full_house: "Score 25",
@@ -53,8 +54,8 @@ export type ScoreboardCategoryScore = {
 };
 
 export type ScoreboardScoreData = {
-  upperSection: Record<UpperCategory, ScoreboardCategoryScore>;
-  lowerSection: Record<LowerCategory, ScoreboardCategoryScore>;
+  upperSection: Record<UpperCategoryId, ScoreboardCategoryScore>;
+  lowerSection: Record<LowerCategoryId, ScoreboardCategoryScore>;
   yatzyBonusAvailable: boolean;
 };
 
@@ -104,12 +105,14 @@ const ScoreCell = ({
 type ScoreboardProps = {
   scoreboard: ScoreboardPlayer[];
   activePlayerId: string | undefined;
-  onCategorySelect: (categoryId: UpperCategory | LowerCategory) => void;
+  isPlayerTurn: boolean;
+  onCategorySelect: (categoryId: CategoryId) => void;
 };
 
 export const Scoreboard = ({
   scoreboard,
   activePlayerId,
+  isPlayerTurn,
   onCategorySelect,
 }: ScoreboardProps) => {
   return (
@@ -129,6 +132,8 @@ export const Scoreboard = ({
             key={id}
             className={classNames({
               ["scoreboard__row__player-name_active"]: id === activePlayerId,
+              ["scoreboard__row__player-name_your-turn"]:
+                id === activePlayerId && isPlayerTurn,
             })}
           >
             {name}
@@ -154,6 +159,7 @@ export const Scoreboard = ({
                 key={playerInfo.id}
                 score={score}
                 clickable={
+                  isPlayerTurn &&
                   score.score === undefined &&
                   activePlayerId !== undefined &&
                   playerInfo.id === activePlayerId
@@ -222,6 +228,7 @@ export const Scoreboard = ({
                 key={playerInfo.id}
                 score={score}
                 clickable={
+                  isPlayerTurn &&
                   score.score === undefined &&
                   activePlayerId !== undefined &&
                   playerInfo.id === activePlayerId

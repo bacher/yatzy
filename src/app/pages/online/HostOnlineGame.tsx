@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { RequestInfo } from "@redwoodjs/sdk/worker";
 
 import { Page } from "@/app/components/Page";
@@ -23,6 +22,7 @@ export const HostOnlineGame = async ({
           roomId={roomId}
           players={roomInfo.players}
           gameState={roomInfo.gameState as GameState}
+          score={roomInfo.score}
         />
       )}
     </Page>

@@ -1,4 +1,4 @@
-import { Dice, UpperCategory } from "@/gameLogic/types";
+import { Dice, UpperCategoryId } from "@/gameLogic/types";
 
 export const diceSymbols = {
   1: "⚀",
@@ -9,7 +9,7 @@ export const diceSymbols = {
   6: "⚅",
 };
 
-export const diceToUpperCategory: Record<Dice, UpperCategory> = {
+export const diceToUpperCategory: Record<Dice, UpperCategoryId> = {
   1: "ones",
   2: "twos",
   3: "threes",
@@ -18,7 +18,7 @@ export const diceToUpperCategory: Record<Dice, UpperCategory> = {
   6: "sixes",
 };
 
-export const upperCategoryToDice: Record<UpperCategory, Dice> = {
+export const upperCategoryToDice: Record<UpperCategoryId, Dice> = {
   ones: 1,
   twos: 2,
   threes: 3,

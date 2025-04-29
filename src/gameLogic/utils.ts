@@ -1,10 +1,13 @@
-import { sortBy, sortedUniq, sum, times } from "lodash";
+import { last, sortBy, sortedUniq, sum, times } from "lodash";
 
 import {
+  CategoryId,
   Dice,
   diceOrdered,
   DiceState,
+  GameStartState,
   GameState,
+  isUpperCategory,
   PlayerScoreData,
   TotalScore,
 } from "@/gameLogic/types";
@@ -240,4 +243,141 @@ export function getEmptyScoreForPlayers(
     results[id] = getEmptyScoreData();
   }
   return results;
+}
+
+export function rollDice(gameState: GameStartState): GameStartState {
+  if (gameState.rollNumber >= 3) {
+    throw new Error("Too many rolls");
+  }
+
+  const updatedState: GameStartState = { ...gameState };
+
+  if (updatedState.diceState && updatedState.diceState.keepIndexes.length > 0) {
+    const { diceSet, keepIndexes } = updatedState.diceState;
+
+    updatedState.diceState.diceSet = mapDice((diceIndex) =>
+      keepIndexes.includes(diceIndex) ? diceSet[diceIndex] : randomDice(),
+    );
+  } else {
+    updatedState.diceState = {
+      diceSet: mapDice(randomDice),
+      keepIndexes: [],
+    };
+  }
+
+  updatedState.rollNumber += 1;
+
+  return updatedState;
+}
+
+export function keepToggle(
+  gameState: GameStartState,
+  diceIndex: number,
+  keep: boolean,
+) {
+  if (!gameState.diceState) {
+    throw new Error("No dice to keep");
+  }
+
+  const { diceState } = gameState;
+
+  return {
+    ...gameState,
+    diceState: {
+      ...diceState,
+      keepIndexes: keep
+        ? [...diceState.keepIndexes, diceIndex]
+        : diceState.keepIndexes.filter((i) => i !== diceIndex),
+    },
+  };
+}
+
+export function selectCategory(
+  players: PlayerInfo[],
+  gameState: GameStartState,
+  score: Record<string, PlayerScoreData>,
+  scoreboard: ScoreboardPlayer[],
+  categoryId: CategoryId,
+): {
+  gameState: GameState;
+  score: Record<string, PlayerScoreData>;
+} {
+  return {
+    gameState: selectCategoryGameState(players, gameState),
+    score: selectCategoryScore(gameState, score, scoreboard, categoryId),
+  };
+}
+
+function selectCategoryScore(
+  gameState: GameStartState,
+  score: Record<string, PlayerScoreData>,
+  scoreboard: ScoreboardPlayer[],
+  categoryId: CategoryId,
+): Record<string, PlayerScoreData> {
+  const playerScoreboard = scoreboard.find(
+    (scoreboardPlayer) =>
+      scoreboardPlayer.playerInfo.id === gameState.currentPlayerId,
+  )!;
+  const { scoreData } = playerScoreboard;
+
+  const section = isUpperCategory(categoryId) ? "upperSection" : "lowerSection";
+
+  const currentScore = score[gameState.currentPlayerId];
+  let possibleCategoryScore: number | undefined;
+  if (isUpperCategory(categoryId)) {
+    possibleCategoryScore = scoreData.upperSection[categoryId].possibleScore;
+  } else {
+    possibleCategoryScore = scoreData.lowerSection[categoryId].possibleScore;
+  }
+
+  return {
+    ...score,
+    [gameState.currentPlayerId]: {
+      ...currentScore,
+      [section]: {
+        ...currentScore[section],
+        [categoryId]: possibleCategoryScore,
+      },
+      yatzyBonus:
+        currentScore.yatzyBonus +
+        (playerScoreboard.scoreData.yatzyBonusAvailable ? 100 : 0),
+    },
+  };
+}
+
+function selectCategoryGameState(
+  players: PlayerInfo[],
+  gameState: GameStartState,
+): GameState {
+  const updatedGameState: GameStartState = { ...gameState };
+
+  if (gameState.currentPlayerId === last(players)!.id) {
+    if (gameState.turn === 12) {
+      return {
+        state: "game_over",
+      };
+    }
+    updatedGameState.turn += 1;
+    updatedGameState.currentPlayerId = players[0].id;
+  } else {
+    const currentPlayerIndex = players.findIndex(
+      (player) => player.id === gameState.currentPlayerId,
+    );
+    updatedGameState.currentPlayerId = players[currentPlayerIndex + 1].id;
+  }
+
+  updatedGameState.rollNumber = 0;
+  updatedGameState.diceState = undefined;
+
+  return updatedGameState;
+}
+
+export function getEmptyGameState(players: PlayerInfo[]): GameState {
+  return {
+    state: "game_start",
+    currentPlayerId: players[0].id,
+    turn: 0,
+    rollNumber: 0,
+    diceState: undefined,
+  };
 }

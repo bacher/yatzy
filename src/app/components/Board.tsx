@@ -1,25 +1,31 @@
 "use client";
 
 import { PlayerInfo } from "@/OnlineGameDurableObject";
-import { GameState, LowerCategory, UpperCategory } from "@/gameLogic/types";
+import {
+  CategoryId,
+  GameState,
+  LowerCategoryId,
+  UpperCategoryId,
+} from "@/gameLogic/types";
 
 import { Scoreboard, ScoreboardPlayer } from "@/app/components/Scoreboard";
 import { DiceBoard } from "@/app/components/DiceBoard";
 import { GameOverResults } from "@/app/components/GameOverResults";
-import { Page } from "@/app/components/Page";
 
 type BoardProps = {
   players: PlayerInfo[];
+  localPlayerIds: string[];
   gameState: GameState;
   scoreboard: ScoreboardPlayer[];
   onRollClick: () => void;
   onKeepToggle: (diceIndex: number, keep: boolean) => void;
-  onCategorySelect: (categoryId: UpperCategory | LowerCategory) => void;
+  onCategorySelect: (categoryId: CategoryId) => void;
   onRestartClick: () => void;
 };
 
 export const Board = ({
   players,
+  localPlayerIds,
   gameState,
   scoreboard,
   onRollClick,
@@ -37,6 +43,11 @@ export const Board = ({
     return player;
   };
 
+  const isCurrentPlayerLocal =
+    gameState.state === "game_start"
+      ? localPlayerIds.includes(gameState.currentPlayerId)
+      : false;
+
   return (
     <div className="board">
       <div className="board__panel">
@@ -52,29 +63,33 @@ export const Board = ({
           </>
         ) : (
           <>
-            <h2>Turn: {gameState.turn + 1} of 13</h2>
-            <h2>
-              Current player: {getPlayerById(gameState.currentPlayerId).name}
-            </h2>
+            <div className="board__turn-info">
+              <h2>Turn: {gameState.turn + 1} of 13</h2>
+              <h2>Player: {getPlayerById(gameState.currentPlayerId).name}</h2>
+            </div>
             {gameState.diceState ? (
               (() => (
                 <DiceBoard
                   diceSet={gameState.diceState.diceSet}
                   keepIndexes={gameState.diceState.keepIndexes}
+                  isPlayerTurn={isCurrentPlayerLocal}
+                  remainedRerolls={3 - gameState.rollNumber}
                   rollButton={
-                    gameState.rollNumber <= 2 ? (
-                      <button type="button" data-primary onClick={onRollClick}>
-                        Reroll dice
-                      </button>
-                    ) : undefined
+                    <button type="button" data-primary onClick={onRollClick}>
+                      Reroll dice
+                    </button>
                   }
                   onKeepToggle={onKeepToggle}
                 />
               ))()
             ) : (
-              <div>Your turn</div>
+              <div>
+                {isCurrentPlayerLocal
+                  ? "Your turn"
+                  : "Waiting for another player to end their turn"}
+              </div>
             )}
-            {gameState.diceState === undefined && (
+            {isCurrentPlayerLocal && gameState.diceState === undefined && (
               <div>
                 <button type="button" data-primary onClick={onRollClick}>
                   Roll dice
@@ -93,6 +108,7 @@ export const Board = ({
               ? gameState.currentPlayerId
               : undefined
           }
+          isPlayerTurn={isCurrentPlayerLocal}
           onCategorySelect={onCategorySelect}
         />
       </div>

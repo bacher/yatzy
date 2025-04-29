@@ -7,10 +7,12 @@ export const upperCategories = [
   "sixes",
 ] as const;
 
-export type UpperCategory = (typeof upperCategories)[number];
+export type UpperCategoryId = (typeof upperCategories)[number];
 
-export function isUpperCategory(category: string): category is UpperCategory {
-  return upperCategories.includes(category as UpperCategory);
+export function isUpperCategory(
+  categoryId: string,
+): categoryId is UpperCategoryId {
+  return upperCategories.includes(categoryId as UpperCategoryId);
 }
 
 export const lowerCategories = [
@@ -23,11 +25,15 @@ export const lowerCategories = [
   "yatzy",
 ] as const;
 
-export type LowerCategory = (typeof lowerCategories)[number];
+export type LowerCategoryId = (typeof lowerCategories)[number];
 
-export function isLowerCategory(category: string): category is LowerCategory {
-  return lowerCategories.includes(category as LowerCategory);
+export function isLowerCategory(
+  categoryId: string,
+): categoryId is LowerCategoryId {
+  return lowerCategories.includes(categoryId as LowerCategoryId);
 }
+
+export type CategoryId = UpperCategoryId | LowerCategoryId;
 
 export type Player = {
   playerInfo: PlayerInfo;
@@ -40,8 +46,8 @@ export type PlayerInfo = {
 };
 
 export type PlayerScoreData = {
-  upperSection: Partial<Record<UpperCategory, number>>;
-  lowerSection: Partial<Record<LowerCategory, number>>;
+  upperSection: Partial<Record<UpperCategoryId, number>>;
+  lowerSection: Partial<Record<LowerCategoryId, number>>;
   yatzyBonus: number;
 };
 

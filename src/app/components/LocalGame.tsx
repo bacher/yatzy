@@ -5,32 +5,27 @@ import { last } from "lodash";
 
 import { PlayerInfo } from "@/OnlineGameDurableObject";
 import {
+  CategoryId,
   GameStartState,
   GameState,
   isUpperCategory,
-  LowerCategory,
-  UpperCategory,
+  LowerCategoryId,
+  UpperCategoryId,
 } from "@/gameLogic/types";
 import {
   calculateScoreboard,
+  getEmptyGameState,
   getEmptyScoreForPlayers,
+  keepToggle,
   mapDice,
   randomDice,
+  rollDice,
+  selectCategory,
 } from "@/gameLogic/utils";
 
 import { Board } from "@/app/components/Board";
 import { ScoreboardPlayer } from "@/app/components/Scoreboard";
 import { Page } from "@/app/components/Page";
-
-function getEmptyGameState(players: PlayerInfo[]): GameState {
-  return {
-    state: "game_start",
-    currentPlayerId: players[0].id,
-    turn: 0,
-    rollNumber: 0,
-    diceState: undefined,
-  };
-}
 
 type LocalGameProps = {
   players: PlayerInfo[];
@@ -53,27 +48,7 @@ export const LocalGame = ({ players }: LocalGameProps) => {
       return;
     }
 
-    const updatedState: GameStartState = { ...gameState };
-
-    if (
-      updatedState.diceState &&
-      updatedState.diceState.keepIndexes.length > 0
-    ) {
-      const { diceSet, keepIndexes } = updatedState.diceState;
-
-      updatedState.diceState.diceSet = mapDice((diceIndex) =>
-        keepIndexes.includes(diceIndex) ? diceSet[diceIndex] : randomDice(),
-      );
-    } else {
-      updatedState.diceState = {
-        diceSet: mapDice(randomDice),
-        keepIndexes: [],
-      };
-    }
-
-    updatedState.rollNumber += 1;
-
-    setGameState(updatedState);
+    setGameState(rollDice(gameState));
   };
 
   const onRestartClick = () => {
@@ -82,90 +57,35 @@ export const LocalGame = ({ players }: LocalGameProps) => {
   };
 
   const onKeepToggle = (diceIndex: number, keep: boolean) => {
-    if (gameState.state !== "game_start" || !gameState.diceState) {
-      throw new Error("Invalid state");
-    }
-
-    const { diceState } = gameState;
-
-    setGameState({
-      ...gameState,
-      diceState: {
-        ...diceState,
-        keepIndexes: keep
-          ? [...diceState.keepIndexes, diceIndex]
-          : diceState.keepIndexes.filter((i) => i !== diceIndex),
-      },
-    });
-  };
-
-  const onCategorySelect = (categoryId: UpperCategory | LowerCategory) => {
     if (gameState.state !== "game_start") {
       throw new Error("Invalid state");
     }
 
-    setScore((score) => {
-      const playerScoreboard = scoreboard.find(
-        (scoreboardPlayer) =>
-          scoreboardPlayer.playerInfo.id === gameState.currentPlayerId,
-      )!;
-      const { scoreData } = playerScoreboard;
+    setGameState(keepToggle(gameState, diceIndex, keep));
+  };
 
-      const section = isUpperCategory(categoryId)
-        ? "upperSection"
-        : "lowerSection";
-
-      const currentScore = score[gameState.currentPlayerId];
-      let updatedScore: number | undefined;
-      if (isUpperCategory(categoryId)) {
-        updatedScore = scoreData.upperSection[categoryId].possibleScore;
-      } else {
-        updatedScore = scoreData.lowerSection[categoryId].possibleScore;
-      }
-
-      return {
-        ...score,
-        [gameState.currentPlayerId]: {
-          ...currentScore,
-          [section]: {
-            ...currentScore[section],
-            [categoryId]: updatedScore,
-          },
-          yatzyBonus:
-            currentScore.yatzyBonus +
-            (playerScoreboard.scoreData.yatzyBonusAvailable ? 100 : 0),
-        },
-      };
-    });
-
-    const updatedGameState: GameStartState = { ...gameState };
-
-    if (gameState.currentPlayerId === last(players)!.id) {
-      if (gameState.turn === 12) {
-        setGameState({
-          state: "game_over",
-        });
-        return;
-      }
-      updatedGameState.turn += 1;
-      updatedGameState.currentPlayerId = players[0].id;
-    } else {
-      const currentPlayerIndex = players.findIndex(
-        (player) => player.id === gameState.currentPlayerId,
-      );
-      updatedGameState.currentPlayerId = players[currentPlayerIndex + 1].id;
+  const onCategorySelect = (categoryId: CategoryId) => {
+    if (gameState.state !== "game_start") {
+      throw new Error("Invalid state");
     }
 
-    updatedGameState.rollNumber = 0;
-    updatedGameState.diceState = undefined;
+    const updated = selectCategory(
+      players,
+      gameState,
+      score,
+      scoreboard,
+      categoryId,
+    );
 
-    setGameState(updatedGameState);
+    setScore(updated.score);
+    setGameState(updated.gameState);
   };
 
   return (
     <Page>
       <Board
         players={players}
+        localPlayerIds={players.map(({ id }) => id)}
         gameState={gameState}
         scoreboard={scoreboard}
         onRollClick={onRollClick}
