@@ -102,16 +102,13 @@ const ScoreCell = ({
 };
 
 type ScoreboardProps = {
-  players: ScoreboardPlayer[];
+  scoreboard: ScoreboardPlayer[];
   activePlayerId: string | undefined;
-  onCategorySelect: (
-    categoryId: UpperCategory | LowerCategory,
-    updatedScore: number,
-  ) => void;
+  onCategorySelect: (categoryId: UpperCategory | LowerCategory) => void;
 };
 
 export const Scoreboard = ({
-  players,
+  scoreboard,
   activePlayerId,
   onCategorySelect,
 }: ScoreboardProps) => {
@@ -120,14 +117,14 @@ export const Scoreboard = ({
       className="scoreboard"
       style={
         {
-          "--players-count": players.length,
+          "--players-count": scoreboard.length,
         } as CSSProperties
       }
     >
       <div className="scoreboard__row scoreboard__row_title">
         <div>Upper section</div>
         <div>How to score</div>
-        {players.map(({ playerInfo: { id, name } }) => (
+        {scoreboard.map(({ playerInfo: { id, name } }) => (
           <div
             key={id}
             className={classNames({
@@ -138,19 +135,19 @@ export const Scoreboard = ({
           </div>
         ))}
       </div>
-      {upperCategories.map((id) => (
-        <div key={id} className="scoreboard__row">
+      {upperCategories.map((categoryId) => (
+        <div key={categoryId} className="scoreboard__row">
           <div className="scoreboard__row__category">
             <span className="scoreboard__row__category-icon">
-              {diceSymbols[upperCategoryToDice[id]]}
+              {diceSymbols[upperCategoryToDice[categoryId]]}
             </span>{" "}
-            {upperSectionTitles[id]}
+            {upperSectionTitles[categoryId]}
           </div>
           <div className="scoreboard__row__scoring">
-            Add only {lowerFirst(upperSectionTitles[id])}
+            Add only {lowerFirst(upperSectionTitles[categoryId])}
           </div>
-          {players.map(({ playerInfo, scoreData }) => {
-            const score = scoreData.upperSection[id];
+          {scoreboard.map(({ playerInfo, scoreData }) => {
+            const score = scoreData.upperSection[categoryId];
 
             return (
               <ScoreCell
@@ -162,7 +159,7 @@ export const Scoreboard = ({
                   playerInfo.id === activePlayerId
                 }
                 onClick={() => {
-                  onCategorySelect(id, score.possibleScore ?? 0);
+                  onCategorySelect(categoryId);
                 }}
               />
             );
@@ -172,7 +169,7 @@ export const Scoreboard = ({
       <div className="scoreboard__row">
         <div>Total Score</div>
         <div></div>
-        {players.map(({ playerInfo, total }) => (
+        {scoreboard.map(({ playerInfo, total }) => (
           <div key={playerInfo.id}>{total.upperTotal}</div>
         ))}
       </div>
@@ -184,14 +181,14 @@ export const Scoreboard = ({
           </span>
         </div>
         <div className="scoreboard__row__scoring">Score 35</div>
-        {players.map(({ playerInfo, total }) => (
+        {scoreboard.map(({ playerInfo, total }) => (
           <div key={playerInfo.id}>{total.upperBonus}</div>
         ))}
       </div>
       <div className="scoreboard__row">
         <div>Total</div>
         <div></div>
-        {players.map(({ playerInfo, total }) => (
+        {scoreboard.map(({ playerInfo, total }) => (
           <div key={playerInfo.id}>{total.upperTotal}</div>
         ))}
       </div>
@@ -201,24 +198,24 @@ export const Scoreboard = ({
         <div></div>
         <div></div>
       </div>
-      {lowerCategories.map((id) => (
-        <div key={id} className="scoreboard__row">
+      {lowerCategories.map((categoryId) => (
+        <div key={categoryId} className="scoreboard__row">
           <div className="scoreboard__row__category scoreboard__row__category_with-hint">
-            {lowerSectionTitles[id]}
-            {lowerSectionHints[id] && (
+            {lowerSectionTitles[categoryId]}
+            {lowerSectionHints[categoryId] && (
               <>
                 {" "}
                 <span className="scoreboard__row__hint">
-                  {lowerSectionHints[id]}
+                  {lowerSectionHints[categoryId]}
                 </span>
               </>
             )}
           </div>
           <div className="scoreboard__row__scoring">
-            {lowerSectionScoring[id]}
+            {lowerSectionScoring[categoryId]}
           </div>
-          {players.map(({ playerInfo, scoreData }) => {
-            const score = scoreData.lowerSection[id];
+          {scoreboard.map(({ playerInfo, scoreData }) => {
+            const score = scoreData.lowerSection[categoryId];
 
             return (
               <ScoreCell
@@ -230,7 +227,7 @@ export const Scoreboard = ({
                   playerInfo.id === activePlayerId
                 }
                 onClick={() => {
-                  onCategorySelect(id, score.possibleScore ?? 0);
+                  onCategorySelect(categoryId);
                 }}
               />
             );
@@ -240,7 +237,7 @@ export const Scoreboard = ({
       <div className="scoreboard__row">
         <div>Yatzy Bonus</div>
         <div className="scoreboard__row__scoring">Score 100 for each bonus</div>
-        {players.map(({ playerInfo, scoreData, total }) => (
+        {scoreboard.map(({ playerInfo, scoreData, total }) => (
           <ScoreCell
             key={playerInfo.id}
             score={{
@@ -257,14 +254,14 @@ export const Scoreboard = ({
       <div className="scoreboard__row">
         <div>Total</div>
         <div></div>
-        {players.map(({ playerInfo, total }) => (
+        {scoreboard.map(({ playerInfo, total }) => (
           <div key={playerInfo.id}>{total.lowerTotal}</div>
         ))}
       </div>
       <div className="scoreboard__row">
         <div>Grand Total</div>
         <div></div>
-        {players.map(({ playerInfo, total }) => (
+        {scoreboard.map(({ playerInfo, total }) => (
           <div key={playerInfo.id}>{total.grandTotal}</div>
         ))}
       </div>

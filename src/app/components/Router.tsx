@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import type { PlayerInfo } from "@/OnlineGameDurableObject";
 import { NewGame } from "./NewGame";
-import { Board } from "./Board";
+import { LocalGame } from "@/app/components/LocalGame";
 
 export const Router = () => {
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
@@ -21,6 +21,6 @@ export const Router = () => {
         />
       );
     case "game":
-      return <Board players={players} />;
+      return <LocalGame players={players} />;
   }
 };
