@@ -1,7 +1,8 @@
 import { DiceState } from "@/gameLogic/types";
 import { diceSymbols } from "@/gameLogic/consts";
-import { sortBy } from "lodash";
+import { partition, sortBy } from "lodash";
 import { ReactNode, useMemo } from "react";
+import classNames from "classnames";
 
 type DiceBoardProps = DiceState & {
   isPlayerTurn: boolean;
@@ -18,41 +19,57 @@ export const DiceBoard = ({
   rollButton,
   onKeepToggle,
 }: DiceBoardProps) => {
-  const sortedIndexedDiceSet = useMemo(
+  const diceList = useMemo(
     () =>
       sortBy(
-        diceSet.map((dice, index) => ({
+        diceSet.map((dice, diceIndex) => ({
           dice,
-          diceIndex: index,
+          diceIndex,
+          keep: keepIndexes.includes(diceIndex),
         })),
         "dice",
       ),
-    [diceSet],
+    [diceSet, keepIndexes],
   );
 
-  const playDice = sortedIndexedDiceSet.filter(
-    ({ diceIndex }) => !keepIndexes.includes(diceIndex),
-  );
-
-  const keepDice = sortedIndexedDiceSet.filter(({ diceIndex }) =>
-    keepIndexes.includes(diceIndex),
+  const [keepDice, playDice] = useMemo(
+    () => partition(diceList, ({ keep }) => keep),
+    [diceList],
   );
 
   return (
     <div className="dice-board">
       <div className="dice-board__section">
-        {playDice.length > 0 ? (
+        {diceList.length > 0 ? (
           <>
             <ul className="dice-board__dice-list">
-              {playDice.map(({ dice, diceIndex }) => (
-                <li key={diceIndex} className="dice-board__dice-list-item">
+              {diceList.map(({ dice, diceIndex, keep }, visualIndex) => (
+                <li
+                  key={diceIndex}
+                  className="dice-board__dice-list-item"
+                  style={
+                    keep
+                      ? {
+                          transform: `translate(${(keepDice.findIndex((keepDice) => keepDice.diceIndex === diceIndex) - (keepDice.length - 1) / 2) * 56}px, 160px)`,
+                        }
+                      : {
+                          transform: `translate(${(playDice.findIndex((playDice) => playDice.diceIndex === diceIndex) - (playDice.length - 1) / 2) * 56}px, 0)`,
+                        }
+                  }
+                >
                   <button
                     type="button"
-                    title="Keep dice"
-                    className="g-button-reset dice-board__dice"
+                    title={keep ? "Unkeep dice" : "Keep dice"}
+                    className={classNames(
+                      "g-button-reset",
+                      "dice-board__dice",
+                      {
+                        ["dice-board__dice_remove"]: keep,
+                      },
+                    )}
                     disabled={!isPlayerTurn}
                     onClick={() => {
-                      onKeepToggle(diceIndex, true);
+                      onKeepToggle(diceIndex, !keep);
                     }}
                   >
                     {diceSymbols[dice]}
@@ -87,29 +104,13 @@ export const DiceBoard = ({
 
       <div className="dice-board__section">
         <h3>Keep</h3>
-        {keepDice.length > 0 ? (
-          <ul className="dice-board__dice-list">
-            {keepDice.map(({ dice, diceIndex }) => (
-              <li key={diceIndex} className="dice-board__dice-list-item">
-                <button
-                  type="button"
-                  title="Unkeep dice"
-                  className="g-button-reset dice-board__dice dice-board__dice_remove"
-                  disabled={!isPlayerTurn}
-                  onClick={() => {
-                    onKeepToggle(diceIndex, false);
-                  }}
-                >
-                  {diceSymbols[dice]}
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="dice-board__hint">
-            {isPlayerTurn ? "Click on dice to keep it" : "Empty"}
-          </div>
-        )}
+        <div className="dice-board__keep-items">
+          {!keepDice.length && (
+            <div className="dice-board__hint">
+              {isPlayerTurn ? "Click on dice to keep it" : "Empty"}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
