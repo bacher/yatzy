@@ -4,15 +4,6 @@
     padding: 16px;
 }
 
-.board {
-    display: flex;
-    gap: 16px;
-
-    & > :first-child {
-        flex-grow: 1;
-    }
-}
-
 .board__panel {
     display: flex;
     flex-direction: column;

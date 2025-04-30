@@ -1,0 +1,8 @@
+.root {
+  display: flex;
+  gap: 16px;
+
+  & > :first-child {
+    flex-grow: 1;
+  }
+}

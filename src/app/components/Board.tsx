@@ -1,16 +1,13 @@
 "use client";
 
 import { PlayerInfo } from "@/OnlineGameDurableObject";
-import {
-  CategoryId,
-  GameState,
-  LowerCategoryId,
-  UpperCategoryId,
-} from "@/gameLogic/types";
+import { CategoryId, GameState } from "@/gameLogic/types";
 
 import { Scoreboard, ScoreboardPlayer } from "@/app/components/Scoreboard";
 import { DiceBoard } from "@/app/components/DiceBoard";
 import { GameOverResults } from "@/app/components/GameOverResults";
+
+import styles from "./Board.module.css";
 
 type BoardProps = {
   players: PlayerInfo[];
@@ -49,7 +46,7 @@ export const Board = ({
       : false;
 
   return (
-    <div className="board">
+    <div className={styles.root}>
       <div className="board__panel">
         <h1>Yatzy</h1>
         {gameState.state === "game_over" ? (

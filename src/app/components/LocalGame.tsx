@@ -3,21 +3,12 @@
 import { useMemo, useState } from "react";
 
 import { PlayerInfo } from "@/OnlineGameDurableObject";
-import {
-  CategoryId,
-  GameStartState,
-  GameState,
-  isUpperCategory,
-  LowerCategoryId,
-  UpperCategoryId,
-} from "@/gameLogic/types";
+import { CategoryId, GameState } from "@/gameLogic/types";
 import {
   calculateScoreboard,
   getEmptyGameState,
   getEmptyScoreForPlayers,
   keepToggle,
-  mapDice,
-  randomDice,
   rollDice,
   selectCategory,
 } from "@/gameLogic/utils";
