@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { debounce } from "lodash";
 
 import { Page } from "@/app/components/Page";
 import { link } from "@/app/shared/links";
@@ -21,6 +22,17 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
     setPlayers(getLocalPlayers());
   }, []);
 
+  const [saveLocalPlayersDebounced] = useState(() =>
+    debounce(saveLocalPlayers, 100),
+  );
+
+  useEffect(
+    () => () => {
+      saveLocalPlayersDebounced.cancel();
+    },
+    [],
+  );
+
   return (
     <Page className="new-game">
       <h1>New Game</h1>
@@ -32,6 +44,7 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
             onSubmit={(event) => {
               event.preventDefault();
 
+              saveLocalPlayersDebounced.cancel();
               saveLocalPlayers(players);
               onStartGame(players);
             }}
@@ -44,13 +57,13 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
                     <input
                       value={player.name}
                       onChange={(event) => {
-                        setPlayers(
-                          players.map((p) =>
-                            p.id === player.id
-                              ? { ...p, name: event.target.value }
-                              : p,
-                          ),
+                        const updatedPlayers = players.map((p) =>
+                          p.id === player.id
+                            ? { ...p, name: event.target.value }
+                            : p,
                         );
+                        setPlayers(updatedPlayers);
+                        saveLocalPlayersDebounced(updatedPlayers);
                       }}
                     />
 
