@@ -3,8 +3,8 @@
 import { useState } from "react";
 
 import type { PlayerInfo } from "@/OnlineGameDurableObject";
-import { NewGame } from "./NewGame";
 import { LocalGame } from "@/app/components/LocalGame";
+import { NewGame } from "./NewGame";
 
 export const Router = () => {
   const [players, setPlayers] = useState<PlayerInfo[]>([]);

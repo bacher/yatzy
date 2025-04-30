@@ -2,7 +2,7 @@
 
 import { env } from "cloudflare:workers";
 
-import type { OnlineGameState, PlayerInfo } from "@/OnlineGameDurableObject";
+import type { PlayerInfoWithClientSecret } from "@/OnlineGameDurableObject";
 import { CategoryId } from "@/gameLogic/types";
 
 export const getContent = async (key: string) => {
@@ -11,58 +11,59 @@ export const getContent = async (key: string) => {
   return roomDo.getContent();
 };
 
-export const updateContent = async (key: string, content: OnlineGameState) => {
-  const doId = env.ONLINE_GAME_DURABLE_OBJECT.idFromName(key);
-  const roomDo = env.ONLINE_GAME_DURABLE_OBJECT.get(doId);
-  await roomDo.setContent(content);
-};
-
-export const addPlayerIntoRoom = async (key: string, player: PlayerInfo) => {
+export const addPlayerIntoRoom = async (
+  key: string,
+  player: PlayerInfoWithClientSecret,
+) => {
   const doId = env.ONLINE_GAME_DURABLE_OBJECT.idFromName(key);
   const roomDo = env.ONLINE_GAME_DURABLE_OBJECT.get(doId);
   await roomDo.addPlayerIntoRoom(player);
 };
 
-export const startGame = async (key: string) => {
-  // TODO: Verify that the game is started by the first player
+export const startGame = async (
+  key: string,
+  player: PlayerInfoWithClientSecret,
+) => {
   const doId = env.ONLINE_GAME_DURABLE_OBJECT.idFromName(key);
   const roomDo = env.ONLINE_GAME_DURABLE_OBJECT.get(doId);
-  await roomDo.startGame();
+  await roomDo.startGame(player);
 };
 
-export const rollDiceAction = async (key: string, playerId: string) => {
-  // TODO: Verify player
+export const rollDiceAction = async (
+  key: string,
+  player: PlayerInfoWithClientSecret,
+) => {
   const doId = env.ONLINE_GAME_DURABLE_OBJECT.idFromName(key);
   const roomDo = env.ONLINE_GAME_DURABLE_OBJECT.get(doId);
-  await roomDo.rollDice(playerId);
+  await roomDo.rollDice(player);
 };
 
 export const keepToggleAction = async (
   key: string,
-  playerId: string,
+  player: PlayerInfoWithClientSecret,
   diceIndex: number,
   keep: boolean,
 ) => {
-  // TODO: Verify player
   const doId = env.ONLINE_GAME_DURABLE_OBJECT.idFromName(key);
   const roomDo = env.ONLINE_GAME_DURABLE_OBJECT.get(doId);
-  await roomDo.keepToggle(playerId, diceIndex, keep);
+  await roomDo.keepToggle(player, diceIndex, keep);
 };
 
 export const selectCategoryAction = async (
   key: string,
-  playerId: string,
+  player: PlayerInfoWithClientSecret,
   categoryId: CategoryId,
 ) => {
-  // TODO: Verify player
   const doId = env.ONLINE_GAME_DURABLE_OBJECT.idFromName(key);
   const roomDo = env.ONLINE_GAME_DURABLE_OBJECT.get(doId);
-  await roomDo.selectCategory(playerId, categoryId);
+  await roomDo.selectCategory(player, categoryId);
 };
 
-export const restartGameAction = async (key: string, playerId: string) => {
-  // TODO: Verify player
+export const restartGameAction = async (
+  key: string,
+  player: PlayerInfoWithClientSecret,
+) => {
   const doId = env.ONLINE_GAME_DURABLE_OBJECT.idFromName(key);
   const roomDo = env.ONLINE_GAME_DURABLE_OBJECT.get(doId);
-  await roomDo.restartGame(playerId);
+  await roomDo.restartGame(player);
 };

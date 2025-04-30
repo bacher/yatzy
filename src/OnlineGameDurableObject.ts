@@ -20,7 +20,25 @@ export type PlayerInfo = {
   name: string;
 };
 
-export type OnlineGameState =
+export type PlayerInfoWithClientSecret = {
+  id: string;
+  name: string;
+  secret: string;
+};
+
+type OnlineGameState =
+  | {
+      roomState: "lobby";
+      players: PlayerInfoWithClientSecret[];
+    }
+  | {
+      roomState: "game";
+      players: PlayerInfoWithClientSecret[];
+      gameState: GameState;
+      score: Record<string, PlayerScoreData>;
+    };
+
+export type OnlineGameStatePublic =
   | {
       roomState: "lobby";
       players: PlayerInfo[];
@@ -40,14 +58,26 @@ export class OnlineGameDurableObject extends DurableObject {
     this.content = undefined;
   }
 
+  private validatePlayer(
+    content: OnlineGameState,
+    player: PlayerInfoWithClientSecret,
+  ): void {
+    const gamePlayer = content.players.find(({ id }) => id === player.id);
+    if (!gamePlayer || gamePlayer.secret !== player.secret) {
+      throw new Error("Unauthorized");
+    }
+  }
+
   private checkGameStateAndCurrentPlayer(
     content: OnlineGameState,
-    currentPlayerId: string,
+    player: PlayerInfoWithClientSecret,
   ): {
-    players: PlayerInfo[];
+    players: PlayerInfoWithClientSecret[];
     gameState: GameStartState;
     score: Record<string, PlayerScoreData>;
   } {
+    this.validatePlayer(content, player);
+
     if (content.roomState !== "game") {
       throw new Error("Room is not in game state");
     }
@@ -56,7 +86,7 @@ export class OnlineGameDurableObject extends DurableObject {
       throw new Error("Room is not in game state");
     }
 
-    if (content.gameState.currentPlayerId !== currentPlayerId) {
+    if (content.gameState.currentPlayerId !== player.id) {
       throw new Error("Not player turn");
     }
 
@@ -67,7 +97,16 @@ export class OnlineGameDurableObject extends DurableObject {
     };
   }
 
-  async getContent(): Promise<OnlineGameState> {
+  async getContent(): Promise<OnlineGameStatePublic> {
+    const content = await this.#getContent();
+
+    return {
+      ...content,
+      players: content.players.map(({ id, name }) => ({ id, name })),
+    };
+  }
+
+  async #getContent(): Promise<OnlineGameState> {
     if (this.content) {
       return this.content;
     }
@@ -84,36 +123,36 @@ export class OnlineGameDurableObject extends DurableObject {
     return content;
   }
 
-  async setContent(newContent: OnlineGameState): Promise<void> {
+  async #setContent(newContent: OnlineGameState): Promise<void> {
     this.content = newContent;
     await this.ctx.storage.put<OnlineGameState>("content", this.content);
   }
 
-  async addPlayerIntoRoom(playerInfo: PlayerInfo): Promise<void> {
-    const content = await this.getContent();
+  async addPlayerIntoRoom(player: PlayerInfoWithClientSecret): Promise<void> {
+    const content = await this.#getContent();
 
     if (content.roomState !== "lobby") {
       throw new Error("Room is not in lobby state");
     }
 
-    const alreadyPlayer = content.players.find(
-      ({ id }) => id === playerInfo.id,
-    );
+    const alreadyPlayer = content.players.find(({ id }) => id === player.id);
 
     if (alreadyPlayer) {
-      if (alreadyPlayer.name !== playerInfo.name) {
-        alreadyPlayer.name = playerInfo.name;
-        await this.setContent(content);
+      if (alreadyPlayer.name !== player.name) {
+        alreadyPlayer.name = player.name;
+        await this.#setContent(content);
       }
       return;
     }
 
-    content.players.push(playerInfo);
-    await this.setContent(content);
+    content.players.push(player);
+    await this.#setContent(content);
   }
 
-  async startGame() {
-    const content = await this.getContent();
+  async startGame(player: PlayerInfoWithClientSecret) {
+    const content = await this.#getContent();
+
+    this.validatePlayer(content, player);
 
     if (content.roomState !== "lobby") {
       throw new Error("Room is not in lobby state");
@@ -123,7 +162,11 @@ export class OnlineGameDurableObject extends DurableObject {
       throw new Error("Room is empty");
     }
 
-    await this.setContent({
+    if (content.players[0].id !== player.id) {
+      throw new Error("Game can be started only by host");
+    }
+
+    await this.#setContent({
       roomState: "game",
       players: content.players,
       score: getEmptyScoreForPlayers(content.players),
@@ -137,15 +180,15 @@ export class OnlineGameDurableObject extends DurableObject {
     });
   }
 
-  async rollDice(playerId: string) {
-    const content = await this.getContent();
+  async rollDice(player: PlayerInfoWithClientSecret) {
+    const content = await this.#getContent();
 
     const { gameState, score } = this.checkGameStateAndCurrentPlayer(
       content,
-      playerId,
+      player,
     );
 
-    await this.setContent({
+    await this.#setContent({
       ...content,
       roomState: "game",
       score,
@@ -153,15 +196,19 @@ export class OnlineGameDurableObject extends DurableObject {
     });
   }
 
-  async keepToggle(playerId: string, diceIndex: number, keep: boolean) {
-    const content = await this.getContent();
+  async keepToggle(
+    player: PlayerInfoWithClientSecret,
+    diceIndex: number,
+    keep: boolean,
+  ) {
+    const content = await this.#getContent();
 
     const { gameState, score } = this.checkGameStateAndCurrentPlayer(
       content,
-      playerId,
+      player,
     );
 
-    await this.setContent({
+    await this.#setContent({
       ...content,
       roomState: "game",
       score,
@@ -169,25 +216,30 @@ export class OnlineGameDurableObject extends DurableObject {
     });
   }
 
-  async selectCategory(playerId: string, categoryId: CategoryId) {
-    const content = await this.getContent();
+  async selectCategory(
+    player: PlayerInfoWithClientSecret,
+    categoryId: CategoryId,
+  ) {
+    const content = await this.#getContent();
 
     const { players, gameState, score } = this.checkGameStateAndCurrentPlayer(
       content,
-      playerId,
+      player,
     );
 
     const scoreboard = calculateScoreboard({ players, gameState, score });
 
-    await this.setContent({
+    await this.#setContent({
       ...content,
       roomState: "game",
       ...selectCategory(players, gameState, score, scoreboard, categoryId),
     });
   }
 
-  async restartGame(playerId: string) {
-    const content = await this.getContent();
+  async restartGame(player: PlayerInfoWithClientSecret) {
+    const content = await this.#getContent();
+
+    this.validatePlayer(content, player);
 
     if (content.roomState !== "game") {
       throw new Error("Room is not in game state");
@@ -199,11 +251,11 @@ export class OnlineGameDurableObject extends DurableObject {
 
     const { players } = content;
 
-    if (playerId !== players[0].id) {
+    if (player.id !== players[0].id) {
       throw new Error("Only host can restart the game");
     }
 
-    await this.setContent({
+    await this.#setContent({
       ...content,
       roomState: "game",
       gameState: getEmptyGameState(players),

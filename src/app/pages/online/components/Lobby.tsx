@@ -2,25 +2,28 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { OnlineGameState, PlayerInfo } from "@/OnlineGameDurableObject";
+import {
+  OnlineGameStatePublic,
+  PlayerInfoWithClientSecret,
+} from "@/OnlineGameDurableObject";
 import { addPlayerIntoRoom, startGame } from "@/app/pages/functions";
 import { debounce } from "lodash";
 import {
-  getLocalPlayerInfo,
+  getOnlinePlayerInfo,
   saveLocalPlayerInfo,
 } from "@/app/utils/localStorage";
 import { ShareRoomLinkText } from "@/app/pages/online/components/ShareRoomLinkText";
 
 type LobbyProps = {
   roomId: string;
-  roomInfo: OnlineGameState;
+  roomInfo: OnlineGameStatePublic;
 };
 
 export const Lobby = ({ roomId, roomInfo }: LobbyProps) => {
-  const [me, setMe] = useState<PlayerInfo | undefined>();
+  const [me, setMe] = useState<PlayerInfoWithClientSecret | undefined>();
 
   useEffect(() => {
-    setMe(getLocalPlayerInfo);
+    setMe(getOnlinePlayerInfo);
   }, []);
 
   useEffect(() => {
@@ -65,7 +68,7 @@ export const Lobby = ({ roomId, roomInfo }: LobbyProps) => {
                   value={me.name}
                   autoFocus
                   onChange={(event) => {
-                    const updatedMe: PlayerInfo = {
+                    const updatedMe: PlayerInfoWithClientSecret = {
                       ...me,
                       name: event.target.value,
                     };
@@ -87,7 +90,7 @@ export const Lobby = ({ roomId, roomInfo }: LobbyProps) => {
             type="button"
             data-primary
             onClick={() => {
-              startGame(roomId).catch((error) => console.error(error));
+              startGame(roomId, me).catch((error) => console.error(error));
             }}
           >
             Start game

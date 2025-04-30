@@ -3,14 +3,14 @@
 import { useLayoutEffect, useMemo, useState } from "react";
 
 import { GameState, PlayerScoreData } from "@/gameLogic/types";
-import { PlayerInfo } from "@/OnlineGameDurableObject";
+import {
+  PlayerInfo,
+  PlayerInfoWithClientSecret,
+} from "@/OnlineGameDurableObject";
 import { Board } from "@/app/components/Board";
 import { ScoreboardPlayer } from "@/app/components/Scoreboard";
-import {
-  calculateScoreboard,
-  getEmptyScoreForPlayers,
-} from "@/gameLogic/utils";
-import { getLocalPlayerInfo } from "@/app/utils/localStorage";
+import { calculateScoreboard } from "@/gameLogic/utils";
+import { getOnlinePlayerInfo } from "@/app/utils/localStorage";
 import {
   keepToggleAction,
   restartGameAction,
@@ -31,11 +31,11 @@ export const OnlineGame = ({
   gameState,
   score,
 }: OnlineGameProps) => {
-  const [me, setMe] = useState<PlayerInfo | undefined>();
+  const [me, setMe] = useState<PlayerInfoWithClientSecret | undefined>();
   const [showDebugInfo, setShowDebugInfo] = useState(false);
 
   useLayoutEffect(() => {
-    setMe(getLocalPlayerInfo);
+    setMe(getOnlinePlayerInfo);
 
     if (new URLSearchParams(window.location.search).has("debug")) {
       setShowDebugInfo(true);
@@ -59,16 +59,16 @@ export const OnlineGame = ({
         gameState={gameState}
         scoreboard={scoreboard}
         onRollClick={() => {
-          rollDiceAction(roomId, me.id).catch(console.error);
+          rollDiceAction(roomId, me).catch(console.error);
         }}
         onKeepToggle={(diceIndex, keep) => {
-          keepToggleAction(roomId, me.id, diceIndex, keep).catch(console.error);
+          keepToggleAction(roomId, me, diceIndex, keep).catch(console.error);
         }}
         onCategorySelect={(categoryId) => {
-          selectCategoryAction(roomId, me.id, categoryId).catch(console.error);
+          selectCategoryAction(roomId, me, categoryId).catch(console.error);
         }}
         onRestartClick={() => {
-          restartGameAction(roomId, me.id).catch(console.error);
+          restartGameAction(roomId, me).catch(console.error);
         }}
       />
       {showDebugInfo && (

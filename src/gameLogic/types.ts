@@ -1,3 +1,5 @@
+import type { PlayerInfo } from "@/OnlineGameDurableObject";
+
 export const upperCategories = [
   "ones",
   "twos",
@@ -38,11 +40,6 @@ export type CategoryId = UpperCategoryId | LowerCategoryId;
 export type Player = {
   playerInfo: PlayerInfo;
   scoreData: PlayerScoreData;
-};
-
-export type PlayerInfo = {
-  id: string;
-  name: string;
 };
 
 export type PlayerScoreData = {

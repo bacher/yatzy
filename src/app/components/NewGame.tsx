@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import { Page } from "@/app/components/Page";
 import { link } from "@/app/shared/links";
 import { generateId } from "@/app/utils/id";

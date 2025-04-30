@@ -1,17 +1,17 @@
+import { CSSProperties } from "react";
+import classNames from "classnames";
+import { lowerFirst } from "lodash";
+
 import {
   CategoryId,
   lowerCategories,
   LowerCategoryId,
-  Player,
-  PlayerInfo,
   TotalScore,
   upperCategories,
   UpperCategoryId,
 } from "@/gameLogic/types";
-import classNames from "classnames";
 import { diceSymbols, upperCategoryToDice } from "@/gameLogic/consts";
-import { lowerFirst } from "lodash";
-import { CSSProperties } from "react";
+import { PlayerInfo } from "@/OnlineGameDurableObject";
 
 const upperSectionTitles: Record<UpperCategoryId, string> = {
   ones: "Aces",
