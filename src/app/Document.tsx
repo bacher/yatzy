@@ -8,12 +8,7 @@ export const Document: FC<{ children: ReactNode }> = ({ children }) => (
       <meta name="theme-color" content="#000000" />
       <title>Yatzy game</title>
       <link rel="icon" type="image/png" href="/favicon.png" />
-      <link
-        rel="preload"
-        crossOrigin="anonymous"
-        href="/src/client.tsx"
-        as="script"
-      />
+      <link rel="modulepreload" href="/src/client.tsx" as="script" />
       <link rel="stylesheet" href="/css/global.css" />
       <link rel="stylesheet" href="/css/custom.css" />
     </head>
