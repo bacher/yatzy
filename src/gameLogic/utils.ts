@@ -96,6 +96,7 @@ export function addTemporaryScore(
     scoreData.lowerSection.yahtzee !== 0;
 
   const isJoker =
+    isYatzy &&
     scoreData.lowerSection.yahtzee !== undefined &&
     scoreData.upperSection[diceToUpperCategory[diceSet[0]]] !== undefined;
 
@@ -323,11 +324,13 @@ function selectCategoryScore(
   const section = isUpperCategory(categoryId) ? "upperSection" : "lowerSection";
 
   const currentScore = score[gameState.currentPlayerId];
-  let possibleCategoryScore: number | undefined;
+  let possibleCategoryScore: number;
   if (isUpperCategory(categoryId)) {
-    possibleCategoryScore = scoreData.upperSection[categoryId].possibleScore;
+    possibleCategoryScore =
+      scoreData.upperSection[categoryId].possibleScore ?? 0;
   } else {
-    possibleCategoryScore = scoreData.lowerSection[categoryId].possibleScore;
+    possibleCategoryScore =
+      scoreData.lowerSection[categoryId].possibleScore ?? 0;
   }
 
   return {

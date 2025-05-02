@@ -95,7 +95,9 @@ export const Board = ({
                 </button>
               </div>
             )}
-            {gameState.rollNumber > 2 && <div>Select category</div>}
+            {isCurrentPlayerLocal && gameState.rollNumber > 2 && (
+              <div>Select category</div>
+            )}
           </>
         )}
       </div>

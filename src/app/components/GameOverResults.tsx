@@ -11,7 +11,7 @@ export const GameOverResults = ({
 }: GameOverResultsProps) => {
   const orderedPlayers = sortBy(
     scoreboardPlayers,
-    (player) => player.total.grandTotal,
+    (player) => -player.total.grandTotal,
   );
   const biggestGrandTotal = orderedPlayers[0].total.grandTotal;
 
