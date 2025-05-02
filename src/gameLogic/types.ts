@@ -24,7 +24,7 @@ export const lowerCategories = [
   "small_straight",
   "large_straight",
   "chance",
-  "yatzy",
+  "yahtzee",
 ] as const;
 
 export type LowerCategoryId = (typeof lowerCategories)[number];

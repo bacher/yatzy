@@ -29,13 +29,13 @@ const lowerSectionTitles: Record<LowerCategoryId, string> = {
   small_straight: "Small straight",
   large_straight: "Large straight",
   chance: "Chance",
-  yatzy: "Yatzy",
+  yahtzee: "Yahtzee",
 };
 
 const lowerSectionHints: Partial<Record<LowerCategoryId, string>> = {
   small_straight: "Sequence of 4",
   large_straight: "Sequence of 5",
-  yatzy: "5 of a kind",
+  yahtzee: "5 of a kind",
 };
 
 const lowerSectionScoring: Record<LowerCategoryId, string> = {
@@ -45,7 +45,7 @@ const lowerSectionScoring: Record<LowerCategoryId, string> = {
   small_straight: "Score 30",
   large_straight: "Score 40",
   chance: "Add total of all 5 dice",
-  yatzy: "Score 50",
+  yahtzee: "Score 50",
 };
 
 export type ScoreboardCategoryScore = {

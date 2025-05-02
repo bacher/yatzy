@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "yatzy-rwsdk",
+  "name": "yahtzee",
   "main": "src/worker.tsx",
   "compatibility_date": "2024-09-23",
   "compatibility_flags": [
@@ -29,7 +29,7 @@
     ]
   },
   "vars": {
-    "WEBAUTHN_APP_NAME": "yatzy-rwsdk"
+    "WEBAUTHN_APP_NAME": "yahtzee"
   },
   "migrations": [
     {
@@ -40,7 +40,10 @@
     },
     {
       "tag": "v2",
-      "new_sqlite_classes": ["RealtimeDurableObject", "OnlineGameDurableObject"]
+      "new_sqlite_classes": [
+        "RealtimeDurableObject",
+        "OnlineGameDurableObject"
+      ]
     }
   ],
   "d1_databases": [

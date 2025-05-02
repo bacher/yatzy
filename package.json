@@ -1,7 +1,7 @@
 {
-  "name": "yatzy-rwsdk",
+  "name": "yahtzee",
   "version": "0.0.1",
-  "description": "Yatzy game built with rwsdk",
+  "description": "yahtzee game built with redwood sdk",
   "main": "index.js",
   "type": "module",
   "keywords": [],

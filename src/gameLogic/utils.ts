@@ -60,7 +60,7 @@ export function addTemporaryScore(
       small_straight: convertScore(scoreData.lowerSection.small_straight),
       large_straight: convertScore(scoreData.lowerSection.large_straight),
       chance: convertScore(scoreData.lowerSection.chance),
-      yatzy: convertScore(scoreData.lowerSection.yatzy),
+      yahtzee: convertScore(scoreData.lowerSection.yahtzee),
     },
     yatzyBonusAvailable: false,
   };
@@ -92,11 +92,11 @@ export function addTemporaryScore(
 
   mergedScoreData.yatzyBonusAvailable =
     isYatzy &&
-    scoreData.lowerSection.yatzy !== undefined &&
-    scoreData.lowerSection.yatzy !== 0;
+    scoreData.lowerSection.yahtzee !== undefined &&
+    scoreData.lowerSection.yahtzee !== 0;
 
   const isJoker =
-    scoreData.lowerSection.yatzy !== undefined &&
+    scoreData.lowerSection.yahtzee !== undefined &&
     scoreData.upperSection[diceToUpperCategory[diceSet[0]]] !== undefined;
 
   for (const dice of diceOrdered) {
@@ -174,8 +174,8 @@ export function addTemporaryScore(
   }
 
   if (isYatzy) {
-    if (mergedScoreData.lowerSection["yatzy"].score === undefined) {
-      mergedScoreData.lowerSection["yatzy"].possibleScore = 50;
+    if (mergedScoreData.lowerSection["yahtzee"].score === undefined) {
+      mergedScoreData.lowerSection["yahtzee"].possibleScore = 50;
     }
   }
 
