@@ -36,9 +36,9 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
   );
 
   return (
-    <Page className={styles.root}>
+    <Page className="new-game">
       <h1>New Game</h1>
-      <div className={styles.panels}>
+      <div className="new-game__panels">
         <div className="new-game__panel">
           <h2 className="new-game__panel-header">Local game</h2>
           <form

@@ -7,8 +7,6 @@ import { Scoreboard, ScoreboardPlayer } from "@/app/components/Scoreboard";
 import { DiceBoard } from "@/app/components/DiceBoard";
 import { GameOverResults } from "@/app/components/GameOverResults";
 
-import styles from "./Board.module.css";
-
 type BoardProps = {
   players: PlayerInfo[];
   localPlayerIds: string[];
@@ -46,7 +44,7 @@ export const Board = ({
       : false;
 
   return (
-    <div className={styles.root}>
+    <div className="board">
       <div className="board__panel">
         <h1>Yahtzee</h1>
         {gameState.state === "game_over" ? (

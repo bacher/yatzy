@@ -4,6 +4,20 @@
   padding: 16px;
 }
 
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media (width > 500px) {
+    flex-direction: row;
+
+    & > :first-child {
+      flex-grow: 1;
+    }
+  }
+}
+
 .board__panel {
   display: flex;
   flex-direction: column;
@@ -227,6 +241,23 @@
 .dice-board__hint {
   font-size: 14px;
   color: gray;
+}
+
+.new-game {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.new-game__panels {
+  display: flex;
+  gap: 16px;
+  flex-direction: column;
+
+  @media (width > 500px) {
+    gap: 32px;
+    flex-direction: row;
+  }
 }
 
 .new-game__panel {
