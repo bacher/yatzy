@@ -9,6 +9,8 @@ import { generateId } from "@/app/utils/id";
 import { PlayerInfo } from "@/OnlineGameDurableObject";
 import { getLocalPlayers, saveLocalPlayers } from "@/app/utils/localStorage";
 
+import styles from "./NewGame.module.css";
+
 type NewGameProps = {
   onStartGame: (players: PlayerInfo[]) => void;
 };
@@ -34,9 +36,9 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
   );
 
   return (
-    <Page className="new-game">
+    <Page className={styles.root}>
       <h1>New Game</h1>
-      <div className="new-game__panels">
+      <div className={styles.panels}>
         <div className="new-game__panel">
           <h2 className="new-game__panel-header">Local game</h2>
           <form

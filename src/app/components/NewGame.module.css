@@ -2,12 +2,15 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.panels {
+  display: flex;
+  gap: 16px;
+  flex-direction: column;
 
   @media (width > 500px) {
+    gap: 32px;
     flex-direction: row;
-
-    & > :first-child {
-      flex-grow: 1;
-    }
   }
 }

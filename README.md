@@ -1,4 +1,4 @@
-# Yatzy game
+# Yahtzee game
 
 ## Running the dev server
 

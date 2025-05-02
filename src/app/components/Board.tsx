@@ -48,7 +48,7 @@ export const Board = ({
   return (
     <div className={styles.root}>
       <div className="board__panel">
-        <h1>Yatzy</h1>
+        <h1>Yahtzee</h1>
         {gameState.state === "game_over" ? (
           <>
             <GameOverResults scoreboardPlayers={scoreboard} />

@@ -242,7 +242,7 @@ export const Scoreboard = ({
         </div>
       ))}
       <div className="scoreboard__row">
-        <div>Yatzy Bonus</div>
+        <div>Yahtzee Bonus</div>
         <div className="scoreboard__row__scoring">Score 100 for each bonus</div>
         {scoreboard.map(({ playerInfo, scoreData, total }) => (
           <ScoreCell
