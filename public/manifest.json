@@ -1,0 +1,10 @@
+{
+  "name": "Yahtzee",
+  "theme_color": "#8936ff",
+  "background_color": "#fff",
+  "start_url": "/standalone.html",
+  "orientation": "any",
+  "display": "standalone",
+  "dir": "auto",
+  "lang": "en-US"
+}
