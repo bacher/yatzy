@@ -12,7 +12,7 @@ export const Document: FC<{ children: ReactNode }> = ({ children }) => (
       <link rel="modulepreload" href="/src/client.tsx" as="script" />
       <link rel="stylesheet" href="/css/global.css" />
       <link rel="stylesheet" href="/css/custom.css" />
-      <link rel="prefetch" href="/standalone.html" type="text/html" />
+      <link rel="prefetch" href="/standalone" as="document" type="text/html" />
     </head>
     <body>
       <div id="root">{children}</div>

@@ -10,6 +10,7 @@ import { PlayerInfo } from "@/OnlineGameDurableObject";
 import { getLocalPlayers, saveLocalPlayers } from "@/app/utils/localStorage";
 
 import styles from "./NewGame.module.css";
+import { useIsOnline } from "@/app/utils/useIsOnline";
 
 type NewGameProps = {
   onStartGame: (players: PlayerInfo[]) => void;
@@ -18,6 +19,7 @@ type NewGameProps = {
 export const NewGame = ({ onStartGame }: NewGameProps) => {
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
   const [hostRoomId, setHostRoomId] = useState<string | undefined>();
+  const isOnline = useIsOnline();
 
   useEffect(() => {
     setHostRoomId(generateId());
@@ -108,20 +110,22 @@ export const NewGame = ({ onStartGame }: NewGameProps) => {
             </div>
           </form>
         </div>
-        <div className="new-game__panel">
-          <h2 className="new-game__panel-header">Play with friends online</h2>
-          <a
-            href={
-              hostRoomId
-                ? link("/host/:roomId", {
-                    roomId: hostRoomId,
-                  })
-                : undefined
-            }
-          >
-            Host online game
-          </a>
-        </div>
+        {isOnline && (
+          <div className="new-game__panel">
+            <h2 className="new-game__panel-header">Play with friends online</h2>
+            <a
+              href={
+                hostRoomId
+                  ? link("/host/:roomId", {
+                      roomId: hostRoomId,
+                    })
+                  : undefined
+              }
+            >
+              Host online game
+            </a>
+          </div>
+        )}
       </div>
     </Page>
   );

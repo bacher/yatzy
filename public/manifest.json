@@ -1,8 +1,8 @@
 {
   "name": "Yahtzee",
-  "theme_color": "#8936ff",
+  "theme_color": "#000",
   "background_color": "#fff",
-  "start_url": "/standalone.html",
+  "start_url": "/standalone",
   "orientation": "any",
   "display": "standalone",
   "dir": "auto",
