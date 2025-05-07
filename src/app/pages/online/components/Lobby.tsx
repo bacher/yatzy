@@ -30,8 +30,10 @@ export const Lobby = ({ roomId, roomInfo }: LobbyProps) => {
     let timeoutId: number | undefined;
 
     if (me && roomInfo.players.every(({ id }) => id !== me.id)) {
-      timeoutId = window.setTimeout(() => {
-        addPlayerIntoRoom(roomId, me).catch((error) => console.error(error));
+      setTimeout(() => {
+        addPlayerIntoRoom(roomId, me).catch((error) => {
+          console.error("addPlayerIntoRoom failed:", error);
+        });
       }, 500);
     }
     return () => {

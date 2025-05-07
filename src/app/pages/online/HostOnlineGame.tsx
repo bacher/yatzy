@@ -1,4 +1,4 @@
-import { RequestInfo } from "@redwoodjs/sdk/worker";
+import { RequestInfo } from "rwsdk/worker";
 
 import { Page } from "@/app/components/Page";
 import { getContent } from "@/app/pages/functions";

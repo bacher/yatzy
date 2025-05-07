@@ -1,4 +1,4 @@
-import { RequestInfo } from "@redwoodjs/sdk/worker";
+import { RequestInfo } from "rwsdk/worker";
 import { Suspense } from "react";
 import { AddTodo } from "@/app/pages/AddTodo";
 

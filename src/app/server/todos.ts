@@ -1,6 +1,6 @@
 "use server";
 
-import { requestInfo } from "@redwoodjs/sdk/worker";
+import { requestInfo } from "rwsdk/worker";
 
 export async function addTodo(formData: FormData) {
   const { ctx } = requestInfo;

@@ -1,5 +1,5 @@
-import { defineApp, ErrorResponse } from "@redwoodjs/sdk/worker";
-import { route, render, prefix } from "@redwoodjs/sdk/router";
+import { defineApp, ErrorResponse } from "rwsdk/worker";
+import { route, render, prefix } from "rwsdk/router";
 import { Document } from "@/app/Document";
 import { Protected } from "@/app/pages/Protected";
 import { setCommonHeaders } from "@/app/headers";
@@ -11,10 +11,10 @@ import type { User } from "@prisma/client";
 import { env } from "cloudflare:workers";
 import { Home } from "@/app/pages/Home";
 import { HostOnlineGame } from "@/app/pages/online/HostOnlineGame";
-import { realtimeRoute } from "@redwoodjs/sdk/realtime/worker";
+import { realtimeRoute } from "rwsdk/realtime/worker";
 
 export { SessionDurableObject } from "./session/durableObject";
-export { RealtimeDurableObject } from "@redwoodjs/sdk/realtime/durableObject";
+export { RealtimeDurableObject } from "rwsdk/realtime/durableObject";
 export { OnlineGameDurableObject } from "@/OnlineGameDurableObject";
 
 export type AppContext = {
